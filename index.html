@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de Jornada Laboral</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --danger: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        h2 {
+            font-size: 22px;
+            border-left: 4px solid var(--accent);
+            padding-left: 10px;
+            margin-top: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .inline-fields {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .inline-fields .form-group {
+            flex: 1;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d1145a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #3ab0d6;
+            transform: translateY(-2px);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #f1f3ff;
+        }
+        
+        .total-row {
+            font-weight: 600;
+            background-color: #e9ecef !important;
+        }
+        
+        .highlight {
+            background-color: #fff3cd !important;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .jornada-container {
+            margin-bottom: 30px;
+        }
+        
+        .jornada-item {
+            position: relative;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .remove-jornada {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .benefits-card {
+            background-color: #e6f7ed;
+            border-left: 4px solid #28a745;
+        }
+        
+        .deductions-card {
+            background-color: #fde8e8;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .summary-card {
+            background-color: #e9f7fe;
+            border-left: 4px solid var(--success);
+        }
+        
+        .marquee {
+            padding: 15px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .inline-fields {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CALCULAR JORNADA LABORAL</h1>
+        
+        <div class="card">
+            <div class="form-group">
+                <label for="salarioBase">Salario Básico Mensual:</label>
+                <input type="number" id="salarioBase" placeholder="Ingrese el salario básico">
+                <small style="color: var(--gray);">(Se usa para calcular el valor hora)</small>
+            </div>
+            
+            <div id="jornadas-container">
+                <!-- Jornadas se agregarán aquí dinámicamente -->
+            </div>
+            
+            <div class="btn-group">
+                <button type="button" class="btn btn-success" onclick="agregarJornada()">+ Agregar Jornada</button>
+                <button type="button" class="btn btn-primary" onclick="calcularTodasJornadas()">Calcular Todas</button>
+                <button type="button" class="btn btn-danger" onclick="resetTodo()">Borrar Todo</button>
+            </div>
+        </div>
+        
+        <div class="card" id="resultados-container" style="display: none;">
+            <h2>DESGLOSE DE HORAS Y RECARGOS</h2>
+            <table id="tabla-resultados">
+                <thead>
+                    <tr>
+                        <th>Tipo de Jornada</th>
+                        <th class="text-center">Horas Trabajadas</th>
+                        <th class="text-right">Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Ordinaria 0%</td><td class="text-center" id="horasOrdinarias">0</td><td class="text-right" id="valorOrdinario">$0</td></tr>
+                    <tr><td>Nocturna 35%</td><td class="text-center" id="horasNocturnas">0</td><td class="text-right" id="valorNocturno">$0</td></tr>
+                    <tr><td>Horas Extras Diurnas 25%</td><td class="text-center" id="extrasDiurnas">0</td><td class="text-right" id="valorExtrasDiurnas">$0</td></tr>
+                    <tr><td>Horas Extras Nocturnas 75%</td><td class="text-center" id="extrasNocturnas">0</td><td class="text-right" id="valorExtrasNocturnas">$0</td></tr>
+                    <tr><td>Festiva Diurna 100%</td><td class="text-center" id="festivaDiurna">0</td><td class="text-right" id="valorFestivaDiurna">$0</td></tr>
+                    <tr><td>Festiva Nocturna 110%</td><td class="text-center" id="festivaNocturna">0</td><td class="text-right" id="valorFestivaNocturna">$0</td></tr>
+                    <tr><td>Hora Extra Festiva 150%</td><td class="text-center" id="horaExtraFestiva">0</td><td class="text-right" id="valorExtraFestiva">$0</td></tr>
+                    <tr class="total-row"><td class="text-right" colspan="2">Total Devengado</td><td class="text-right" id="detalleTotal">$0</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card benefits-card" id="beneficios-container" style="display: none;">
+            <h2>PRESTACIONES SOCIALES</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th class="text-right">Porcentaje</th>
+                        <th class="text-right">Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Prima de Servicios</td><td class="text-right">8.33%</td><td class="text-right" id="prima">$0</td></tr>
+                    <tr><td>Cesantías</td><td class="text-right">8.33%</td><td class="text-right" id="cesantias">$0</td></tr>
+                    <tr><td>Intereses de Cesantías</td><td class="text-right">1%</td><td class="text-right" id="intereses-cesantias">$0</td></tr>
+                    <tr class="total-row"><td class="text-right" colspan="2">Total Prestaciones</td><td class="text-right" id="total-prestaciones">$0</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card deductions-card" id="deducciones-container" style="display: none;">
+            <h2>DEDUCCIONES</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th class="text-right">Porcentaje</th>
+                        <th class="text-right">Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Salud (Empleado)</td><td class="text-right">4%</td><td class="text-right" id="salud-empleado">$0</td></tr>
+                    <tr><td>Pensión (Empleado)</td><td class="text-right">4%</td><td class="text-right" id="pension-empleado">$0</td></tr>
+                    <tr class="total-row"><td class="text-right" colspan="2">Total Deducciones</td><td class="text-right" id="total-deducciones">$0</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card summary-card" id="resumen-container" style="display: none;">
+            <h2>RESUMEN DE PAGO</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th class="text-right">Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Total Devengado</td><td class="text-right" id="resumen-devengado">$0</td></tr>
+                    <tr><td>Total Prestaciones Sociales</td><td class="text-right" id="resumen-prestaciones">$0</td></tr>
+                    <tr><td>Total Deducciones</td><td class="text-right" id="resumen-deducciones">$0</td></tr>
+                    <tr class="total-row highlight"><td>NETO A PAGAR</td><td class="text-right" id="neto-pagar">$0</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="marquee">
+            "Esto es lo que las empresas de Vigilancia deberían pagarles por trabajar un día adicional o un mes completo. Un saludo especial a los valientes compañeros que están prestando turno en las empresas Celtas, Brand y Yale, quienes día a día arriesgan su vida en su labor. ¡Gracias por su compromiso y coraje!"
+        </div>
+        
+        <p style="text-align:center; margin-top:15px; font-size:14px; color:var(--gray);">
+            ¿Quieres calcular el resultado de tu prima y cesantías? 
+            <a href="https://carlos2601.github.io/cesant-as-primas/" style="color:var(--accent); text-decoration:none; font-weight:bold;">
+                Da click aquí.
+            </a>
+        </p>
+    </div>
+
+    <script>
+        // Festivos 2025
+        const festivos2025 = [
+            '2025-01-01', '2025-01-05', '2025-01-06', '2025-01-12', '2025-01-19', '2025-01-26',  
+            '2025-02-02', '2025-02-09', '2025-02-16', '2025-02-23',  
+            '2025-03-02', '2025-03-09', '2025-03-16', '2025-03-23', '2025-03-24', '2025-03-30',  
+            '2025-04-06', '2025-04-13', '2025-04-17', '2025-04-18', '2025-04-20', '2025-04-27',  
+            '2025-05-01', '2025-05-04', '2025-05-11', '2025-05-18', '2025-05-25',  
+            '2025-06-01', '2025-06-02', '2025-06-08', '2025-06-15', '2025-06-22', '2025-06-23', '2025-06-29', '2025-06-30',  
+            '2025-07-06', '2025-07-13', '2025-07-20', '2025-07-27',  
+            '2025-08-03', '2025-08-07', '2025-08-10', '2025-08-17', '2025-08-18', '2025-08-24', '2025-08-31',  
+            '2025-09-07', '2025-09-14', '2025-09-21', '2025-09-28',  
+            '2025-10-05', '2025-10-12', '2025-10-13', '2025-10-19', '2025-10-26',  
+            '2025-11-02', '2025-11-03', '2025-11-09', '2025-11-16', '2025-11-17', '2025-11-23', '2025-11-30',  
+            '2025-12-07', '2025-12-08', '2025-12-14', '2025-12-21', '2025-12-25', '2025-12-28'
+        ];
+
+        // Variables globales para acumular resultados de múltiples jornadas
+        let totalHorasOrdinarias = 0;
+        let totalHorasNocturnas = 0;
+        let totalExtrasDiurnas = 0;
+        let totalExtrasNocturnas = 0;
+        let totalFestivaDiurna = 0;
+        let totalFestivaNocturna = 0;
+        let totalExtraFestiva = 0;
+        let totalDevengado = 0;
+        let contadorJornadas = 0;
+        let salarioBase = 0;
+
+        // Función para agregar una nueva jornada
+        function agregarJornada() {
+            contadorJornadas++;
+            const jornadaId = 'jornada-' + contadorJornadas;
+            
+            const jornadaHTML = `
+                <div class="jornada-item" id="${jornadaId}">
+                    <button class="remove-jornada" onclick="eliminarJornada('${jornadaId}')">×</button>
+                    <h3>Jornada ${contadorJornadas}</h3>
+                    <div class="inline-fields">
+                        <div class="form-group">
+                            <label for="${jornadaId}-fechaIngreso">Fecha y Hora de Ingreso:</label>
+                            <input type="datetime-local" id="${jornadaId}-fechaIngreso" value="2025-04-15T17:00">
+                        </div>
+                        <div class="form-group">
+                            <label for="${jornadaId}-fechaSalida">Fecha y Hora de Salida:</label>
+                            <input type="datetime-local" id="${jornadaId}-fechaSalida" value="2025-04-16T07:00">
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="calcularJornada('${jornadaId}')">Calcular Jornada</button>
+                </div>
+            `;
+            
+            document.getElementById('jornadas-container').insertAdjacentHTML('beforeend', jornadaHTML);
+        }
+
+        // Función para eliminar una jornada
+        function eliminarJornada(jornadaId) {
+            const jornadaElement = document.getElementById(jornadaId);
+            if (jornadaElement) {
+                jornadaElement.remove();
+                // Reorganizar los números de jornada si es necesario
+                reorganizarJornadas();
+            }
+        }
+
+        // Función para reorganizar los números de jornada después de eliminar una
+        function reorganizarJornadas() {
+            const jornadas = document.querySelectorAll('.jornada-item');
+            let nuevoContador = 0;
+            
+            jornadas.forEach(jornada => {
+                nuevoContador++;
+                const jornadaId = jornada.id;
+                const titulo = jornada.querySelector('h3');
+                if (titulo) titulo.textContent = `Jornada ${nuevoContador}`;
+            });
+            
+            contadorJornadas = nuevoContador;
+        }
+
+        // Función para calcular una jornada individual
+        function calcularJornada(jornadaId) {
+            // Validar que el salario base esté ingresado
+            salarioBase = parseFloat(document.getElementById('salarioBase').value) || 0;
+            if (salarioBase <= 0) {
+                alert('Por favor, ingrese el salario básico primero.');
+                return;
+            }
+
+            const ingreso = new Date(document.getElementById(`${jornadaId}-fechaIngreso`).value);
+            const salida = new Date(document.getElementById(`${jornadaId}-fechaSalida`).value);
+
+            if (!ingreso || !salida) {
+                alert('Por favor, complete las fechas de ingreso y salida para esta jornada.');
+                return;
+            }
+
+            let horasOrdinarias = 0, horasNocturnas = 0;
+            let extrasDiurnas = 0, extrasNocturnas = 0;
+            let festivaDiurna = 0, festivaNocturna = 0, extraFestiva = 0;
+
+            const horaValor = salarioBase / 240;
+            const recargos = {
+                nocturna: 0.35,
+                extraDiurna: 0.25,
+                extraNocturna: 0.75,
+                festivaDiurna: 1.00,
+                festivaNocturna: 1.10,
+                extraFestiva: 1.50,
+            };
+
+            let horaActual = new Date(ingreso);
+            let horasAcumuladas = 0;
+
+            while (horaActual < salida) {
+                const siguiente = new Date(horaActual);
+                siguiente.setHours(siguiente.getHours() + 1);
+                const hora = horaActual.getHours();
+
+                const fechaStr = horaActual.getFullYear() + '-' +
+                    String(horaActual.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(horaActual.getDate()).padStart(2, '0');
+
+                const esFestivo = festivos2025.includes(fechaStr);
+                const esNocturna = (hora >= 21 || hora < 6);
+                const esDiurna = !esNocturna;
+                const esExtra = horasAcumuladas >= 8;
+
+                if (esFestivo && esExtra) {
+                    extraFestiva++;
+                } else if (esFestivo && esNocturna) {
+                    festivaNocturna++;
+                } else if (esFestivo && esDiurna) {
+                    festivaDiurna++;
+                } else if (esExtra && esNocturna) {
+                    extrasNocturnas++;
+                } else if (esExtra && esDiurna) {
+                    extrasDiurnas++;
+                } else if (esNocturna) {
+                    horasNocturnas++;
+                } else {
+                    horasOrdinarias++;
+                }
+
+                horasAcumuladas++;
+                horaActual = siguiente;
+            }
+
+            // Acumular resultados para mostrar en la tabla general
+            totalHorasOrdinarias += horasOrdinarias;
+            totalHorasNocturnas += horasNocturnas;
+            totalExtrasDiurnas += extrasDiurnas;
+            totalExtrasNocturnas += extrasNocturnas;
+            totalFestivaDiurna += festivaDiurna;
+            totalFestivaNocturna += festivaNocturna;
+            totalExtraFestiva += extraFestiva;
+
+            // Mostrar mensaje de éxito para esta jornada
+            alert(`Jornada calculada exitosamente!\nHoras trabajadas: ${horasAcumuladas}`);
+        }
+
+        // Función para calcular todas las jornadas
+        function calcularTodasJornadas() {
+            // Validar que el salario base esté ingresado
+            salarioBase = parseFloat(document.getElementById('salarioBase').value) || 0;
+            if (salarioBase <= 0) {
+                alert('Por favor, ingrese el salario básico primero.');
+                return;
+            }
+
+            // Resetear acumuladores
+            totalHorasOrdinarias = 0;
+            totalHorasNocturnas = 0;
+            totalExtrasDiurnas = 0;
+            totalExtrasNocturnas = 0;
+            totalFestivaDiurna = 0;
+            totalFestivaNocturna = 0;
+            totalExtraFestiva = 0;
+            totalDevengado = 0;
+
+            // Calcular cada jornada
+            const jornadas = document.querySelectorAll('.jornada-item');
+            if (jornadas.length === 0) {
+                alert('Por favor, agrega al menos una jornada para calcular.');
+                return;
+            }
+
+            jornadas.forEach(jornada => {
+                const jornadaId = jornada.id;
+                calcularJornada(jornadaId);
+            });
+
+            // Mostrar resultados generales
+            mostrarResultados();
+        }
+
+        // Función para mostrar los resultados acumulados
+        function mostrarResultados() {
+            const format = (valor) => '$' + valor.toLocaleString('es-CO');
+            
+            const horaValor = salarioBase / 240;
+            
+            // Calcular valores monetarios
+            const valorOrdinario = Math.round(totalHorasOrdinarias * horaValor);
+            const valorNocturno = Math.round(totalHorasNocturnas * horaValor * 1.35);
+            const valorExtrasDiurnas = Math.round(totalExtrasDiurnas * horaValor * 1.25);
+            const valorExtrasNocturnas = Math.round(totalExtrasNocturnas * horaValor * 1.75);
+            const valorFestivaDiurna = Math.round(totalFestivaDiurna * horaValor * 2.00);
+            const valorFestivaNocturna = Math.round(totalFestivaNocturna * horaValor * 2.10);
+            const valorExtraFestiva = Math.round(totalExtraFestiva * horaValor * 2.50);
+            
+            totalDevengado = valorOrdinario + valorNocturno + valorExtrasDiurnas + 
+                            valorExtrasNocturnas + valorFestivaDiurna + 
+                            valorFestivaNocturna + valorExtraFestiva;
+
+            // Actualizar tabla de resultados
+            document.getElementById('horasOrdinarias').textContent = totalHorasOrdinarias;
+            document.getElementById('valorOrdinario').textContent = format(valorOrdinario);
+            
+            document.getElementById('horasNocturnas').textContent = totalHorasNocturnas;
+            document.getElementById('valorNocturno').textContent = format(valorNocturno);
+            
+            document.getElementById('extrasDiurnas').textContent = totalExtrasDiurnas;
+            document.getElementById('valorExtrasDiurnas').textContent = format(valorExtrasDiurnas);
+            
+            document.getElementById('extrasNocturnas').textContent = totalExtrasNocturnas;
+            document.getElementById('valorExtrasNocturnas').textContent = format(valorExtrasNocturnas);
+            
+            document.getElementById('festivaDiurna').textContent = totalFestivaDiurna;
+            document.getElementById('valorFestivaDiurna').textContent = format(valorFestivaDiurna);
+            
+            document.getElementById('festivaNocturna').textContent = totalFestivaNocturna;
+            document.getElementById('valorFestivaNocturna').textContent = format(valorFestivaNocturna);
+            
+            document.getElementById('horaExtraFestiva').textContent = totalExtraFestiva;
+            document.getElementById('valorExtraFestiva').textContent = format(valorExtraFestiva);
+            
+            document.getElementById('detalleTotal').textContent = format(totalDevengado);
+            
+            // Calcular y mostrar prestaciones sociales (sobre el total devengado)
+            calcularPrestaciones(totalDevengado);
+            
+            // Calcular y mostrar deducciones (sobre el total devengado)
+            calcularDeducciones(totalDevengado);
+            
+            // Calcular y mostrar resumen
+            calcularResumen(totalDevengado);
+            
+            // Mostrar todas las secciones de resultados
+            document.getElementById('resultados-container').style.display = 'block';
+            document.getElementById('beneficios-container').style.display = 'block';
+            document.getElementById('deducciones-container').style.display = 'block';
+            document.getElementById('resumen-container').style.display = 'block';
+        }
+
+        // Función para calcular prestaciones sociales (sobre el total devengado)
+        function calcularPrestaciones(totalDevengado) {
+            const format = (valor) => '$' + Math.round(valor).toLocaleString('es-CO');
+            
+            // Calculamos sobre el total devengado
+            const prima = totalDevengado * 0.0833; // 8.33% del total devengado
+            const cesantias = totalDevengado * 0.0833; // 8.33% del total devengado
+            const interesesCesantias = cesantias * 0.01; // 1% de las cesantías
+            
+            const totalPrestaciones = prima + cesantias + interesesCesantias;
+            
+            document.getElementById('prima').textContent = format(prima);
+            document.getElementById('cesantias').textContent = format(cesantias);
+            document.getElementById('intereses-cesantias').textContent = format(interesesCesantias);
+            document.getElementById('total-prestaciones').textContent = format(totalPrestaciones);
+            
+            return totalPrestaciones;
+        }
+
+        // Función para calcular deducciones (sobre el total devengado)
+        function calcularDeducciones(totalDevengado) {
+            const format = (valor) => '$' + Math.round(valor).toLocaleString('es-CO');
+            
+            const saludEmpleado = totalDevengado * 0.04;
+            const pensionEmpleado = totalDevengado * 0.04;
+            const totalDeducciones = saludEmpleado + pensionEmpleado;
+            
+            document.getElementById('salud-empleado').textContent = format(saludEmpleado);
+            document.getElementById('pension-empleado').textContent = format(pensionEmpleado);
+            document.getElementById('total-deducciones').textContent = format(totalDeducciones);
+            
+            return totalDeducciones;
+        }
+
+        // Función para calcular resumen
+        function calcularResumen(totalDevengado) {
+            const format = (valor) => '$' + Math.round(valor).toLocaleString('es-CO');
+            
+            const totalPrestaciones = parseFloat(document.getElementById('total-prestaciones').textContent.replace(/[^0-9]/g, ''));
+            const totalDeducciones = parseFloat(document.getElementById('total-deducciones').textContent.replace(/[^0-9]/g, ''));
+            const netoPagar = totalDevengado + totalPrestaciones - totalDeducciones;
+            
+            document.getElementById('resumen-devengado').textContent = format(totalDevengado);
+            document.getElementById('resumen-prestaciones').textContent = format(totalPrestaciones);
+            document.getElementById('resumen-deducciones').textContent = format(totalDeducciones);
+            document.getElementById('neto-pagar').textContent = format(netoPagar);
+        }
+
+        // Función para resetear todo
+        function resetTodo() {
+            document.getElementById('jornadas-container').innerHTML = '';
+            document.getElementById('salarioBase').value = '';
+            contadorJornadas = 0;
+            salarioBase = 0;
+            
+            // Resetear acumuladores
+            totalHorasOrdinarias = 0;
+            totalHorasNocturnas = 0;
+            totalExtrasDiurnas = 0;
+            totalExtrasNocturnas = 0;
+            totalFestivaDiurna = 0;
+            totalFestivaNocturna = 0;
+            totalExtraFestiva = 0;
+            totalDevengado = 0;
+            
+            // Resetear tablas
+            [
+                'horasOrdinarias', 'valorOrdinario',
+                'horasNocturnas', 'valorNocturno',
+                'extrasDiurnas', 'valorExtrasDiurnas',
+                'extrasNocturnas', 'valorExtrasNocturnas',
+                'festivaDiurna', 'valorFestivaDiurna',
+                'festivaNocturna', 'valorFestivaNocturna',
+                'horaExtraFestiva', 'valorExtraFestiva',
+                'detalleTotal',
+                'prima', 'cesantias', 'intereses-cesantias', 'total-prestaciones',
+                'salud-empleado', 'pension-empleado', 'total-deducciones',
+                'resumen-devengado', 'resumen-prestaciones', 'resumen-deducciones', 'neto-pagar'
+            ].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = id.startsWith('valor') || id.startsWith('total') || id.startsWith('resumen') || id.startsWith('neto') ? '$0' : '0';
+            });
+            
+            // Ocultar secciones de resultados
+            document.getElementById('resultados-container').style.display = 'none';
+            document.getElementById('beneficios-container').style.display = 'none';
+            document.getElementById('deducciones-container').style.display = 'none';
+            document.getElementById('resumen-container').style.display = 'none';
+        }
+
+        // Agregar una jornada inicial al cargar la página
+        window.onload = function() {
+            agregarJornada();
+        };
+    </script>
+</body>
+</html>
