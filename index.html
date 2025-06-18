@@ -29,35 +29,41 @@
             background-color: #f5f7fa;
             color: var(--dark);
             line-height: 1.6;
-            padding: 20px;
+            padding: 10px;
+            width: 100%;
+            min-width: 320px;
         }
         
         .container {
-            max-width: 1000px;
+            width: 100%;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
         }
         
         .card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+            width: 100%;
+            overflow-x: auto;
         }
         
         h1, h2, h3 {
             color: var(--primary);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: 600;
+            word-break: break-word;
         }
         
         h1 {
-            font-size: 28px;
+            font-size: 22px;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             position: relative;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
         }
         
         h1::after {
@@ -66,65 +72,65 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
+            width: 80px;
+            height: 3px;
             background: var(--accent);
             border-radius: 2px;
         }
         
         h2 {
-            font-size: 22px;
-            border-left: 4px solid var(--accent);
-            padding-left: 10px;
-            margin-top: 30px;
+            font-size: 18px;
+            border-left: 3px solid var(--accent);
+            padding-left: 8px;
+            margin-top: 20px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            width: 100%;
         }
         
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 500;
             color: var(--dark);
+            font-size: 14px;
         }
         
         input, select {
             width: 100%;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 14px;
             transition: all 0.3s;
         }
         
         input:focus, select:focus {
             border-color: var(--accent);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
         }
         
         .inline-fields {
             display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .inline-fields .form-group {
-            flex: 1;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
         }
         
         .btn {
             display: inline-block;
-            padding: 12px 24px;
+            padding: 10px 15px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
+            width: 100%;
         }
         
         .btn-primary {
@@ -134,7 +140,6 @@
         
         .btn-primary:hover {
             background-color: var(--secondary);
-            transform: translateY(-2px);
         }
         
         .btn-danger {
@@ -144,7 +149,6 @@
         
         .btn-danger:hover {
             background-color: #d1145a;
-            transform: translateY(-2px);
         }
         
         .btn-success {
@@ -154,34 +158,39 @@
         
         .btn-success:hover {
             background-color: #3ab0d6;
-            transform: translateY(-2px);
         }
         
         .btn-group {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+            width: 100%;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            border-radius: 8px;
+            margin: 15px 0;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            font-size: 13px;
+            min-width: 300px;
         }
         
         th, td {
-            padding: 12px 15px;
+            padding: 8px 10px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+            word-break: break-word;
         }
         
         th {
             background-color: var(--primary);
             color: white;
             font-weight: 500;
+            font-size: 13px;
         }
         
         tr:nth-child(even) {
@@ -210,71 +219,103 @@
         }
         
         .jornada-container {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            width: 100%;
         }
         
         .jornada-item {
             position: relative;
-            margin-bottom: 20px;
-            padding: 20px;
+            margin-bottom: 15px;
+            padding: 15px;
             border-radius: 8px;
             background-color: #f8f9fa;
-            border-left: 4px solid var(--accent);
+            border-left: 3px solid var(--accent);
+            width: 100%;
         }
         
         .remove-jornada {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
             background: var(--danger);
             color: white;
             border: none;
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 10px;
         }
         
         .benefits-card {
             background-color: #e6f7ed;
-            border-left: 4px solid #28a745;
+            border-left: 3px solid #28a745;
         }
         
         .deductions-card {
             background-color: #fde8e8;
-            border-left: 4px solid var(--danger);
+            border-left: 3px solid var(--danger);
         }
         
         .summary-card {
             background-color: #e9f7fe;
-            border-left: 4px solid var(--success);
+            border-left: 3px solid var(--success);
         }
         
         .marquee {
-            padding: 15px;
+            padding: 12px;
             background-color: var(--primary);
             color: white;
-            border-radius: 8px;
-            margin: 20px 0;
+            border-radius: 6px;
+            margin: 15px 0;
             font-weight: 500;
+            font-size: 13px;
+            width: 100%;
         }
         
-        @media (max-width: 768px) {
+        small {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        @media (min-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+            
             .inline-fields {
-                flex-direction: column;
-                gap: 15px;
+                flex-direction: row;
             }
             
             .btn-group {
-                flex-direction: column;
+                flex-direction: row;
             }
             
             .btn {
-                width: 100%;
+                width: auto;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 10px 12px;
             }
         }
     </style>
@@ -287,7 +328,7 @@
             <div class="form-group">
                 <label for="salarioBase">Salario Básico Mensual:</label>
                 <input type="number" id="salarioBase" placeholder="Ingrese el salario básico">
-                <small style="color: var(--gray);">(Se usa para calcular el valor hora)</small>
+                <small>(Se usa para calcular el valor hora)</small>
             </div>
             
             <div id="jornadas-container">
@@ -303,87 +344,95 @@
         
         <div class="card" id="resultados-container" style="display: none;">
             <h2>DESGLOSE DE HORAS Y RECARGOS</h2>
-            <table id="tabla-resultados">
-                <thead>
-                    <tr>
-                        <th>Tipo de Jornada</th>
-                        <th class="text-center">Horas Trabajadas</th>
-                        <th class="text-right">Valor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Ordinaria 0%</td><td class="text-center" id="horasOrdinarias">0</td><td class="text-right" id="valorOrdinario">$0</td></tr>
-                    <tr><td>Nocturna 35%</td><td class="text-center" id="horasNocturnas">0</td><td class="text-right" id="valorNocturno">$0</td></tr>
-                    <tr><td>Horas Extras Diurnas 25%</td><td class="text-center" id="extrasDiurnas">0</td><td class="text-right" id="valorExtrasDiurnas">$0</td></tr>
-                    <tr><td>Horas Extras Nocturnas 75%</td><td class="text-center" id="extrasNocturnas">0</td><td class="text-right" id="valorExtrasNocturnas">$0</td></tr>
-                    <tr><td>Festiva Diurna 100%</td><td class="text-center" id="festivaDiurna">0</td><td class="text-right" id="valorFestivaDiurna">$0</td></tr>
-                    <tr><td>Festiva Nocturna 110%</td><td class="text-center" id="festivaNocturna">0</td><td class="text-right" id="valorFestivaNocturna">$0</td></tr>
-                    <tr><td>Hora Extra Festiva 150%</td><td class="text-center" id="horaExtraFestiva">0</td><td class="text-right" id="valorExtraFestiva">$0</td></tr>
-                    <tr class="total-row"><td class="text-right" colspan="2">Total Devengado</td><td class="text-right" id="detalleTotal">$0</td></tr>
-                </tbody>
-            </table>
+            <div style="overflow-x: auto;">
+                <table id="tabla-resultados">
+                    <thead>
+                        <tr>
+                            <th>Tipo de Jornada</th>
+                            <th class="text-center">Horas</th>
+                            <th class="text-right">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Ordinaria 0%</td><td class="text-center" id="horasOrdinarias">0</td><td class="text-right" id="valorOrdinario">$0</td></tr>
+                        <tr><td>Nocturna 35%</td><td class="text-center" id="horasNocturnas">0</td><td class="text-right" id="valorNocturno">$0</td></tr>
+                        <tr><td>Extras Diurnas 25%</td><td class="text-center" id="extrasDiurnas">0</td><td class="text-right" id="valorExtrasDiurnas">$0</td></tr>
+                        <tr><td>Extras Nocturnas 75%</td><td class="text-center" id="extrasNocturnas">0</td><td class="text-right" id="valorExtrasNocturnas">$0</td></tr>
+                        <tr><td>Festiva Diurna 100%</td><td class="text-center" id="festivaDiurna">0</td><td class="text-right" id="valorFestivaDiurna">$0</td></tr>
+                        <tr><td>Festiva Nocturna 110%</td><td class="text-center" id="festivaNocturna">0</td><td class="text-right" id="valorFestivaNocturna">$0</td></tr>
+                        <tr><td>Extra Festiva 150%</td><td class="text-center" id="horaExtraFestiva">0</td><td class="text-right" id="valorExtraFestiva">$0</td></tr>
+                        <tr class="total-row"><td class="text-right" colspan="2">Total Devengado</td><td class="text-right" id="detalleTotal">$0</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <div class="card benefits-card" id="beneficios-container" style="display: none;">
             <h2>PRESTACIONES SOCIALES</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Concepto</th>
-                        <th class="text-right">Porcentaje</th>
-                        <th class="text-right">Valor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Prima de Servicios</td><td class="text-right">8.33%</td><td class="text-right" id="prima">$0</td></tr>
-                    <tr><td>Cesantías</td><td class="text-right">8.33%</td><td class="text-right" id="cesantias">$0</td></tr>
-                    <tr><td>Intereses de Cesantías</td><td class="text-right">1%</td><td class="text-right" id="intereses-cesantias">$0</td></tr>
-                    <tr class="total-row"><td class="text-right" colspan="2">Total Prestaciones</td><td class="text-right" id="total-prestaciones">$0</td></tr>
-                </tbody>
-            </table>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th class="text-right">%</th>
+                            <th class="text-right">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Prima de Servicios</td><td class="text-right">8.33%</td><td class="text-right" id="prima">$0</td></tr>
+                        <tr><td>Cesantías</td><td class="text-right">8.33%</td><td class="text-right" id="cesantias">$0</td></tr>
+                        <tr><td>Int. Cesantías</td><td class="text-right">1%</td><td class="text-right" id="intereses-cesantias">$0</td></tr>
+                        <tr class="total-row"><td class="text-right" colspan="2">Total Prestaciones</td><td class="text-right" id="total-prestaciones">$0</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <div class="card deductions-card" id="deducciones-container" style="display: none;">
             <h2>DEDUCCIONES</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Concepto</th>
-                        <th class="text-right">Porcentaje</th>
-                        <th class="text-right">Valor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Salud (Empleado)</td><td class="text-right">4%</td><td class="text-right" id="salud-empleado">$0</td></tr>
-                    <tr><td>Pensión (Empleado)</td><td class="text-right">4%</td><td class="text-right" id="pension-empleado">$0</td></tr>
-                    <tr class="total-row"><td class="text-right" colspan="2">Total Deducciones</td><td class="text-right" id="total-deducciones">$0</td></tr>
-                </tbody>
-            </table>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th class="text-right">%</th>
+                            <th class="text-right">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Salud (Empleado)</td><td class="text-right">4%</td><td class="text-right" id="salud-empleado">$0</td></tr>
+                        <tr><td>Pensión (Empleado)</td><td class="text-right">4%</td><td class="text-right" id="pension-empleado">$0</td></tr>
+                        <tr class="total-row"><td class="text-right" colspan="2">Total Deducciones</td><td class="text-right" id="total-deducciones">$0</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <div class="card summary-card" id="resumen-container" style="display: none;">
             <h2>RESUMEN DE PAGO</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Concepto</th>
-                        <th class="text-right">Valor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Total Devengado</td><td class="text-right" id="resumen-devengado">$0</td></tr>
-                    <tr><td>Total Prestaciones Sociales</td><td class="text-right" id="resumen-prestaciones">$0</td></tr>
-                    <tr><td>Total Deducciones</td><td class="text-right" id="resumen-deducciones">$0</td></tr>
-                    <tr class="total-row highlight"><td>NETO A PAGAR</td><td class="text-right" id="neto-pagar">$0</td></tr>
-                </tbody>
-            </table>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th class="text-right">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Total Devengado</td><td class="text-right" id="resumen-devengado">$0</td></tr>
+                        <tr><td>Total Prestaciones</td><td class="text-right" id="resumen-prestaciones">$0</td></tr>
+                        <tr><td>Total Deducciones</td><td class="text-right" id="resumen-deducciones">$0</td></tr>
+                        <tr class="total-row highlight"><td>NETO A PAGAR</td><td class="text-right" id="neto-pagar">$0</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <div class="marquee">
             "Esto es lo que las empresas de Vigilancia deberían pagarles por trabajar un día adicional o un mes completo. Un saludo especial a los valientes compañeros que están prestando turno en las empresas Celtas, Brand y Yale, quienes día a día arriesgan su vida en su labor. ¡Gracias por su compromiso y coraje!"
         </div>
         
-        <p style="text-align:center; margin-top:15px; font-size:14px; color:var(--gray);">
+        <p style="text-align:center; margin-top:15px; font-size:13px; color:var(--gray);">
             ¿Quieres calcular el resultado de tu prima y cesantías? 
             <a href="https://carlos2601.github.io/cesant-as-primas/" style="color:var(--accent); text-decoration:none; font-weight:bold;">
                 Da click aquí.
