@@ -17,13 +17,13 @@
             --dark: #212529;
             --gray: #6c757d;
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f5f7fa;
@@ -33,14 +33,14 @@
             width: 100%;
             min-width: 320px;
         }
-        
+
         .container {
             width: 100%;
             max-width: 100%;
             margin: 0 auto;
             padding: 10px;
         }
-        
+
         .card {
             background: white;
             border-radius: 12px;
@@ -50,14 +50,14 @@
             width: 100%;
             overflow-x: auto;
         }
-        
+
         h1, h2, h3 {
             color: var(--primary);
             margin-bottom: 15px;
             font-weight: 600;
             word-break: break-word;
         }
-        
+
         h1 {
             font-size: 22px;
             text-align: center;
@@ -65,7 +65,7 @@
             position: relative;
             padding-bottom: 10px;
         }
-        
+
         h1::after {
             content: '';
             position: absolute;
@@ -77,19 +77,19 @@
             background: var(--accent);
             border-radius: 2px;
         }
-        
+
         h2 {
             font-size: 18px;
             border-left: 3px solid var(--accent);
             padding-left: 8px;
             margin-top: 20px;
         }
-        
+
         .form-group {
             margin-bottom: 15px;
             width: 100%;
         }
-        
+
         label {
             display: block;
             margin-bottom: 6px;
@@ -97,7 +97,7 @@
             color: var(--dark);
             font-size: 14px;
         }
-        
+
         input, select {
             width: 100%;
             padding: 10px 12px;
@@ -106,20 +106,20 @@
             font-size: 14px;
             transition: all 0.3s;
         }
-        
+
         input:focus, select:focus {
             border-color: var(--accent);
             outline: none;
             box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
         }
-        
+
         .inline-fields {
             display: flex;
             flex-direction: column;
             gap: 10px;
             width: 100%;
         }
-        
+
         .btn {
             display: inline-block;
             padding: 10px 15px;
@@ -132,34 +132,34 @@
             text-align: center;
             width: 100%;
         }
-        
+
         .btn-primary {
             background-color: var(--primary);
             color: white;
         }
-        
+
         .btn-primary:hover {
             background-color: var(--secondary);
         }
-        
+
         .btn-danger {
             background-color: var(--danger);
             color: white;
         }
-        
+
         .btn-danger:hover {
             background-color: #d1145a;
         }
-        
+
         .btn-success {
             background-color: var(--success);
             color: white;
         }
-        
+
         .btn-success:hover {
             background-color: #3ab0d6;
         }
-        
+
         .btn-group {
             display: flex;
             flex-direction: column;
@@ -167,7 +167,7 @@
             margin-top: 15px;
             width: 100%;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -178,51 +178,51 @@
             font-size: 13px;
             min-width: 300px;
         }
-        
+
         th, td {
             padding: 8px 10px;
             text-align: left;
             border-bottom: 1px solid #ddd;
             word-break: break-word;
         }
-        
+
         th {
             background-color: var(--primary);
             color: white;
             font-weight: 500;
             font-size: 13px;
         }
-        
+
         tr:nth-child(even) {
             background-color: #f8f9fa;
         }
-        
+
         tr:hover {
             background-color: #f1f3ff;
         }
-        
+
         .total-row {
             font-weight: 600;
             background-color: #e9ecef !important;
         }
-        
+
         .highlight {
             background-color: #fff3cd !important;
         }
-        
+
         .text-right {
             text-align: right;
         }
-        
+
         .text-center {
             text-align: center;
         }
-        
+
         .jornada-container {
             margin-bottom: 20px;
             width: 100%;
         }
-        
+
         .jornada-item {
             position: relative;
             margin-bottom: 15px;
@@ -232,7 +232,7 @@
             border-left: 3px solid var(--accent);
             width: 100%;
         }
-        
+
         .remove-jornada {
             position: absolute;
             top: 8px;
@@ -249,22 +249,22 @@
             cursor: pointer;
             font-size: 10px;
         }
-        
+
         .benefits-card {
             background-color: #e6f7ed;
             border-left: 3px solid #28a745;
         }
-        
+
         .deductions-card {
             background-color: #fde8e8;
             border-left: 3px solid var(--danger);
         }
-        
+
         .summary-card {
             background-color: #e9f7fe;
             border-left: 3px solid var(--success);
         }
-        
+
         .marquee {
             padding: 12px;
             background-color: var(--primary);
@@ -275,45 +275,45 @@
             font-size: 13px;
             width: 100%;
         }
-        
+
         small {
             font-size: 12px;
             color: var(--gray);
         }
-        
+
         @media (min-width: 600px) {
             .container {
                 padding: 15px;
             }
-            
+
             .card {
                 padding: 20px;
             }
-            
+
             h1 {
                 font-size: 24px;
             }
-            
+
             h2 {
                 font-size: 20px;
             }
-            
+
             .inline-fields {
                 flex-direction: row;
             }
-            
+
             .btn-group {
                 flex-direction: row;
             }
-            
+
             .btn {
                 width: auto;
             }
-            
+
             table {
                 font-size: 14px;
             }
-            
+
             th, td {
                 padding: 10px 12px;
             }
@@ -323,25 +323,35 @@
 <body>
     <div class="container">
         <h1>CALCULAR JORNADA LABORAL</h1>
-        
+
         <div class="card">
             <div class="form-group">
                 <label for="salarioBase">Salario Básico Mensual:</label>
                 <input type="number" id="salarioBase" placeholder="Ingrese el salario básico">
                 <small>(Se usa para calcular el valor hora)</small>
             </div>
-            
+            <div class="form-group">
+                <label for="diasDescanso">Número de Días de Descanso Remunerado:</label>
+                <input type="number" id="diasDescanso" placeholder="Ingrese número de días">
+                <small>(Se multiplicará por el valor de un día básico)</small>
+            </div>
+            <div class="form-group">
+                <label for="valorRodamientoDiario">Valor Rodamiento Diario:</label>
+                <input type="number" id="valorRodamientoDiario" placeholder="Ingrese el valor diario de rodamiento">
+                <small>(Se multiplicará por el número de jornadas calculadas)</small>
+            </div>
+
             <div id="jornadas-container">
                 <!-- Jornadas se agregarán aquí dinámicamente -->
             </div>
-            
+
             <div class="btn-group">
                 <button type="button" class="btn btn-success" onclick="agregarJornada()">+ Agregar Jornada</button>
                 <button type="button" class="btn btn-primary" onclick="calcularTodasJornadas()">Calcular Todas</button>
                 <button type="button" class="btn btn-danger" onclick="resetTodo()">Borrar Todo</button>
             </div>
         </div>
-        
+
         <div class="card" id="resultados-container" style="display: none;">
             <h2>DESGLOSE DE HORAS Y RECARGOS</h2>
             <div style="overflow-x: auto;">
@@ -366,7 +376,7 @@
                 </table>
             </div>
         </div>
-        
+
         <div class="card benefits-card" id="beneficios-container" style="display: none;">
             <h2>PRESTACIONES SOCIALES</h2>
             <div style="overflow-x: auto;">
@@ -387,7 +397,7 @@
                 </table>
             </div>
         </div>
-        
+
         <div class="card deductions-card" id="deducciones-container" style="display: none;">
             <h2>DEDUCCIONES</h2>
             <div style="overflow-x: auto;">
@@ -407,7 +417,7 @@
                 </table>
             </div>
         </div>
-        
+
         <div class="card summary-card" id="resumen-container" style="display: none;">
             <h2>RESUMEN DE PAGO</h2>
             <div style="overflow-x: auto;">
@@ -422,16 +432,19 @@
                         <tr><td>Total Devengado</td><td class="text-right" id="resumen-devengado">$0</td></tr>
                         <tr><td>Total Prestaciones</td><td class="text-right" id="resumen-prestaciones">$0</td></tr>
                         <tr><td>Total Deducciones</td><td class="text-right" id="resumen-deducciones">$0</td></tr>
+                        <tr><td>Descanso Remunerado</td><td class="text-right" id="resumen-descanso-remunerado">$0</td></tr>
+                        <tr><td>Rodamiento</td><td class="text-right" id="resumen-rodamientos">$0</td></tr>
+                        <tr><td>Subsidio de Transporte</td><td class="text-right" id="resumen-subsidio-transporte">$0</td></tr>
                         <tr class="total-row highlight"><td>NETO A PAGAR</td><td class="text-right" id="neto-pagar">$0</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        
-        
-        
+
+
+
         <p style="text-align:center; margin-top:15px; font-size:13px; color:var(--gray);">
-            ¿Quieres calcular el resultado de tu prima y cesantías? 
+            ¿Quieres calcular el resultado de tu prima y cesantías?
             <a href="https://carlos2601.github.io/cesant-as-primas/" style="color:var(--accent); text-decoration:none; font-weight:bold;">
                 Da click aquí.
             </a>
@@ -441,19 +454,22 @@
     <script>
         // Festivos 2025
         const festivos2025 = [
-            '2025-01-01', '2025-01-05', '2025-01-06', '2025-01-12', '2025-01-19', '2025-01-26',  
-            '2025-02-02', '2025-02-09', '2025-02-16', '2025-02-23',  
-            '2025-03-02', '2025-03-09', '2025-03-16', '2025-03-23', '2025-03-24', '2025-03-30',  
-            '2025-04-06', '2025-04-13', '2025-04-17', '2025-04-18', '2025-04-20', '2025-04-27',  
-            '2025-05-01', '2025-05-04', '2025-05-11', '2025-05-18', '2025-05-25',  
-            '2025-06-01', '2025-06-02', '2025-06-08', '2025-06-15', '2025-06-22', '2025-06-23', '2025-06-29', '2025-06-30',  
-            '2025-07-06', '2025-07-13', '2025-07-20', '2025-07-27',  
-            '2025-08-03', '2025-08-07', '2025-08-10', '2025-08-17', '2025-08-18', '2025-08-24', '2025-08-31',  
-            '2025-09-07', '2025-09-14', '2025-09-21', '2025-09-28',  
-            '2025-10-05', '2025-10-12', '2025-10-13', '2025-10-19', '2025-10-26',  
-            '2025-11-02', '2025-11-03', '2025-11-09', '2025-11-16', '2025-11-17', '2025-11-23', '2025-11-30',  
+            '2025-01-01', '2025-01-05', '2025-01-06', '2025-01-12', '2025-01-19', '2025-01-26',
+            '2025-02-02', '2025-02-09', '2025-02-16', '2025-02-23',
+            '2025-03-02', '2025-03-09', '2025-03-16', '2025-03-23', '2025-03-24', '2025-03-30',
+            '2025-04-06', '2025-04-13', '2025-04-17', '2025-04-18', '2025-04-20', '2025-04-27',
+            '2025-05-01', '2025-05-04', '2025-05-11', '2025-05-18', '2025-05-25',
+            '2025-06-01', '2025-06-02', '2025-06-08', '2025-06-15', '2025-06-22', '2025-06-23', '2025-06-29', '2025-06-30',
+            '2025-07-06', '2025-07-13', '2025-07-20', '2025-07-27',
+            '2025-08-03', '2025-08-07', '2025-08-10', '2025-08-17', '2025-08-18', '2025-08-24', '2025-08-31',
+            '2025-09-07', '2025-09-14', '2025-09-21', '2025-09-28',
+            '2025-10-05', '2025-10-12', '2025-10-13', '2025-10-19', '2025-10-26',
+            '2025-11-02', '2025-11-03', '2025-11-09', '2025-11-16', '2025-11-17', '2025-11-23', '2025-11-30',
             '2025-12-07', '2025-12-08', '2025-12-14', '2025-12-21', '2025-12-25', '2025-12-28'
         ];
+
+        const SALARIO_MINIMO_COLOMBIA = 1300000; // COP
+        const SUBSIDIO_TRANSPORTE_MONTO = 200000; // COP
 
         // Variables globales para acumular resultados de múltiples jornadas
         let totalHorasOrdinarias = 0;
@@ -471,8 +487,8 @@
         function obtenerFechaActual() {
             const ahora = new Date();
             // Formato: YYYY-MM-DD con hora fija 17:00
-            const fecha = ahora.getFullYear() + '-' + 
-                         String(ahora.getMonth() + 1).padStart(2, '0') + '-' + 
+            const fecha = ahora.getFullYear() + '-' +
+                         String(ahora.getMonth() + 1).padStart(2, '0') + '-' +
                          String(ahora.getDate()).padStart(2, '0') + 'T17:00';
             return fecha;
         }
@@ -483,8 +499,8 @@
             const manana = new Date(ahora);
             manana.setDate(ahora.getDate() + 1);
             // Formato: YYYY-MM-DD con hora fija 07:00
-            const fecha = manana.getFullYear() + '-' + 
-                         String(manana.getMonth() + 1).padStart(2, '0') + '-' + 
+            const fecha = manana.getFullYear() + '-' +
+                         String(manana.getMonth() + 1).padStart(2, '0') + '-' +
                          String(manana.getDate()).padStart(2, '0') + 'T07:00';
             return fecha;
         }
@@ -493,7 +509,7 @@
         function agregarJornada() {
             contadorJornadas++;
             const jornadaId = 'jornada-' + contadorJornadas;
-            
+
             const jornadaHTML = `
                 <div class="jornada-item" id="${jornadaId}">
                     <button class="remove-jornada" onclick="eliminarJornada('${jornadaId}')">×</button>
@@ -510,7 +526,7 @@
                     </div>
                 </div>
             `;
-            
+
             document.getElementById('jornadas-container').insertAdjacentHTML('beforeend', jornadaHTML);
         }
 
@@ -528,14 +544,14 @@
         function reorganizarJornadas() {
             const jornadas = document.querySelectorAll('.jornada-item');
             let nuevoContador = 0;
-            
+
             jornadas.forEach(jornada => {
                 nuevoContador++;
                 const jornadaId = jornada.id;
                 const titulo = jornada.querySelector('h3');
                 if (titulo) titulo.textContent = `Jornada ${nuevoContador}`;
             });
-            
+
             contadorJornadas = nuevoContador;
         }
 
@@ -653,9 +669,9 @@
         // Función para mostrar los resultados acumulados
         function mostrarResultados() {
             const format = (valor) => '$' + valor.toLocaleString('es-CO');
-            
+
             const horaValor = salarioBase / 240;
-            
+
             // Calcular valores monetarios
             const valorOrdinario = Math.round(totalHorasOrdinarias * horaValor);
             const valorNocturno = Math.round(totalHorasNocturnas * horaValor * 1.35);
@@ -664,44 +680,44 @@
             const valorFestivaDiurna = Math.round(totalFestivaDiurna * horaValor * 2.00);
             const valorFestivaNocturna = Math.round(totalFestivaNocturna * horaValor * 2.10);
             const valorExtraFestiva = Math.round(totalExtraFestiva * horaValor * 2.50);
-            
-            totalDevengado = valorOrdinario + valorNocturno + valorExtrasDiurnas + 
-                            valorExtrasNocturnas + valorFestivaDiurna + 
+
+            totalDevengado = valorOrdinario + valorNocturno + valorExtrasDiurnas +
+                            valorExtrasNocturnas + valorFestivaDiurna +
                             valorFestivaNocturna + valorExtraFestiva;
 
             // Actualizar tabla de resultados
             document.getElementById('horasOrdinarias').textContent = totalHorasOrdinarias;
             document.getElementById('valorOrdinario').textContent = format(valorOrdinario);
-            
+
             document.getElementById('horasNocturnas').textContent = totalHorasNocturnas;
             document.getElementById('valorNocturno').textContent = format(valorNocturno);
-            
+
             document.getElementById('extrasDiurnas').textContent = totalExtrasDiurnas;
             document.getElementById('valorExtrasDiurnas').textContent = format(valorExtrasDiurnas);
-            
+
             document.getElementById('extrasNocturnas').textContent = totalExtrasNocturnas;
             document.getElementById('valorExtrasNocturnas').textContent = format(valorExtrasNocturnas);
-            
+
             document.getElementById('festivaDiurna').textContent = totalFestivaDiurna;
             document.getElementById('valorFestivaDiurna').textContent = format(valorFestivaDiurna);
-            
+
             document.getElementById('festivaNocturna').textContent = totalFestivaNocturna;
             document.getElementById('valorFestivaNocturna').textContent = format(valorFestivaNocturna);
-            
+
             document.getElementById('horaExtraFestiva').textContent = totalExtraFestiva;
             document.getElementById('valorExtraFestiva').textContent = format(valorExtraFestiva);
-            
+
             document.getElementById('detalleTotal').textContent = format(totalDevengado);
-            
+
             // Calcular y mostrar prestaciones sociales (sobre el total devengado)
-            calcularPrestaciones(totalDevengado);
-            
+            const prestacionesCalculadas = calcularPrestaciones(totalDevengado);
+
             // Calcular y mostrar deducciones (sobre el total devengado)
-            calcularDeducciones(totalDevengado);
-            
+            const deduccionesCalculadas = calcularDeducciones(totalDevengado);
+
             // Calcular y mostrar resumen
-            calcularResumen(totalDevengado);
-            
+            calcularResumen(totalDevengado, prestacionesCalculadas, deduccionesCalculadas);
+
             // Mostrar todas las secciones de resultados
             document.getElementById('resultados-container').style.display = 'block';
             document.getElementById('beneficios-container').style.display = 'block';
@@ -712,48 +728,104 @@
         // Función para calcular prestaciones sociales (sobre el total devengado)
         function calcularPrestaciones(totalDevengado) {
             const format = (valor) => '$' + Math.round(valor).toLocaleString('es-CO');
-            
+
             // Calculamos sobre el total devengado
             const prima = totalDevengado * 0.0833; // 8.33% del total devengado
             const cesantias = totalDevengado * 0.0833; // 8.33% del total devengado
             const interesesCesantias = cesantias * 0.01; // 1% de las cesantías
-            
+
             const totalPrestaciones = prima + cesantias + interesesCesantias;
-            
+
             document.getElementById('prima').textContent = format(prima);
             document.getElementById('cesantias').textContent = format(cesantias);
             document.getElementById('intereses-cesantias').textContent = format(interesesCesantias);
             document.getElementById('total-prestaciones').textContent = format(totalPrestaciones);
-            
+
             return totalPrestaciones;
+        }
+
+        function calcularDescansoRemunerado(salarioBaseIngresado, numDiasDescanso) {
+            const dias = parseInt(numDiasDescanso, 10); // Ensure numDiasDescanso is an integer
+            const salario = parseFloat(salarioBaseIngresado);
+
+            if (salario > 0 && dias > 0) {
+                // Calculate value of one day's pay and multiply by number of rest days
+                // Use Math.round to handle potential floating point inaccuracies for currency.
+                return Math.round((salario / 30) * dias);
+            }
+            return 0; // Return 0 if inputs are not valid or non-positive
+        }
+
+        function calcularRodamientoTotal(valorRodamientoDiario, numeroDeJornadas) {
+            const valorDiario = parseFloat(valorRodamientoDiario);
+            const jornadas = parseInt(numeroDeJornadas, 10); // Should be an integer already from contadorJornadas
+
+            if (valorDiario > 0 && jornadas > 0) {
+                // Multiply daily rodamiento value by number of jornadas
+                // Use Math.round for currency.
+                return Math.round(valorDiario * jornadas);
+            }
+            return 0; // Return 0 if inputs are not valid or non-positive
+        }
+
+        function calcularSubsidioTransporte(salarioBaseIngresado, numeroDeJornadas) {
+            if (numeroDeJornadas <= 0) { // No subsidy if no jornadas worked
+                return 0;
+            }
+            if (salarioBaseIngresado > 0 && salarioBaseIngresado < (2 * SALARIO_MINIMO_COLOMBIA)) {
+                // Prorate the subsidy: (Total Subsidy / 30 days) * Number of Jornadas
+                // Use Math.round to avoid fractional cents for the final subsidy amount.
+                return Math.round((SUBSIDIO_TRANSPORTE_MONTO / 30) * numeroDeJornadas);
+            }
+            return 0; // Not eligible by salary
         }
 
         // Función para calcular deducciones (sobre el total devengado)
         function calcularDeducciones(totalDevengado) {
             const format = (valor) => '$' + Math.round(valor).toLocaleString('es-CO');
-            
+
             const saludEmpleado = totalDevengado * 0.04;
             const pensionEmpleado = totalDevengado * 0.04;
             const totalDeducciones = saludEmpleado + pensionEmpleado;
-            
+
             document.getElementById('salud-empleado').textContent = format(saludEmpleado);
             document.getElementById('pension-empleado').textContent = format(pensionEmpleado);
             document.getElementById('total-deducciones').textContent = format(totalDeducciones);
-            
+
             return totalDeducciones;
         }
 
         // Función para calcular resumen
-        function calcularResumen(totalDevengado) {
+        function calcularResumen(totalDevengado, totalPrestacionesNumerico, totalDeduccionesNumerico) {
             const format = (valor) => '$' + Math.round(valor).toLocaleString('es-CO');
-            
-            const totalPrestaciones = parseFloat(document.getElementById('total-prestaciones').textContent.replace(/[^0-9]/g, ''));
-            const totalDeducciones = parseFloat(document.getElementById('total-deducciones').textContent.replace(/[^0-9]/g, ''));
-            const netoPagar = totalDevengado + totalPrestaciones - totalDeducciones;
-            
+
+            const diasDescansoInput = document.getElementById('diasDescanso').value;
+            const valorRodamientoDiarioInput = document.getElementById('valorRodamientoDiario').value;
+
+            const diasDescansoValue = parseInt(diasDescansoInput, 10) || 0;
+            const valorRodamientoDiarioValue = parseFloat(valorRodamientoDiarioInput) || 0;
+
+            const descansoRemuneradoValor = calcularDescansoRemunerado(salarioBase, diasDescansoValue);
+            const rodamientoTotalValor = calcularRodamientoTotal(valorRodamientoDiarioValue, contadorJornadas);
+            const subsidioTransporteValor = calcularSubsidioTransporte(salarioBase, contadorJornadas);
+
+            // Use the passed-in numerical values directly
+            // Ensure they are numbers, default to 0 if undefined/NaN (though should be provided by mostrarResultados)
+            const prestaciones = Number(totalPrestacionesNumerico) || 0;
+            const deducciones = Number(totalDeduccionesNumerico) || 0;
+
+            const netoPagar = totalDevengado + prestaciones - deducciones +
+                                subsidioTransporteValor + descansoRemuneradoValor + rodamientoTotalValor;
+
             document.getElementById('resumen-devengado').textContent = format(totalDevengado);
-            document.getElementById('resumen-prestaciones').textContent = format(totalPrestaciones);
-            document.getElementById('resumen-deducciones').textContent = format(totalDeducciones);
+            // Update summary table display fields with the accurate numerical values
+            document.getElementById('resumen-prestaciones').textContent = format(prestaciones);
+            document.getElementById('resumen-deducciones').textContent = format(deducciones);
+
+            document.getElementById('resumen-descanso-remunerado').textContent = format(descansoRemuneradoValor);
+            document.getElementById('resumen-rodamientos').textContent = format(rodamientoTotalValor);
+            document.getElementById('resumen-subsidio-transporte').textContent = format(subsidioTransporteValor);
+
             document.getElementById('neto-pagar').textContent = format(netoPagar);
         }
 
@@ -761,9 +833,11 @@
         function resetTodo() {
             document.getElementById('jornadas-container').innerHTML = '';
             document.getElementById('salarioBase').value = '';
+            document.getElementById('diasDescanso').value = '';
+            document.getElementById('valorRodamientoDiario').value = '';
             contadorJornadas = 0;
             salarioBase = 0;
-            
+
             // Resetear acumuladores
             totalHorasOrdinarias = 0;
             totalHorasNocturnas = 0;
@@ -773,7 +847,7 @@
             totalFestivaNocturna = 0;
             totalExtraFestiva = 0;
             totalDevengado = 0;
-            
+
             // Resetear tablas
             [
                 'horasOrdinarias', 'valorOrdinario',
@@ -786,12 +860,15 @@
                 'detalleTotal',
                 'prima', 'cesantias', 'intereses-cesantias', 'total-prestaciones',
                 'salud-empleado', 'pension-empleado', 'total-deducciones',
-                'resumen-devengado', 'resumen-prestaciones', 'resumen-deducciones', 'neto-pagar'
+                'resumen-devengado', 'resumen-prestaciones', 'resumen-deducciones',
+                'resumen-descanso-remunerado',
+                'resumen-rodamientos',
+                'resumen-subsidio-transporte', 'neto-pagar'
             ].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) element.textContent = id.startsWith('valor') || id.startsWith('total') || id.startsWith('resumen') || id.startsWith('neto') ? '$0' : '0';
             });
-            
+
             // Ocultar secciones de resultados
             document.getElementById('resultados-container').style.display = 'none';
             document.getElementById('beneficios-container').style.display = 'none';
