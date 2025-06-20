@@ -340,6 +340,27 @@
                 <input type="number" id="valorRodamientoDiario" placeholder="Ingrese el valor diario de rodamiento">
                 <small>(Se multiplicará por el número de jornadas calculadas)</small>
             </div>
+            <div class="form-group">
+                <label for="nombreEmpleado">Nombre del Empleado:</label>
+                <input type="text" id="nombreEmpleado" placeholder="Ingrese el nombre completo">
+            </div>
+            <div class="form-group">
+                <label for="identificacionEmpleado">No. Identificación:</label>
+                <input type="text" id="identificacionEmpleado" placeholder="Ingrese el número de ID">
+            </div>
+            <div class="form-group">
+                <label for="formaPago">Forma de Pago:</label>
+                <input type="text" id="formaPago" placeholder="Ej: Transferencia Bancaria">
+            </div>
+            <div class="form-group">
+                <label for="fechaPago">Fecha de Pago (en PDF):</label>
+                <input type="date" id="fechaPago">
+            </div>
+            <div class="form-group">
+                <label for="diasPeriodoPago">Número de Días Periodo de Pago (en PDF):</label>
+                <input type="number" id="diasPeriodoPago" placeholder="Ej: 15 o 30">
+                <small>(Días a reportar en el cabezal del PDF)</small>
+            </div>
 
             <div id="jornadas-container">
                 <!-- Jornadas se agregarán aquí dinámicamente -->
@@ -877,6 +898,12 @@
                 salarioBase: document.getElementById('salarioBase').value || "",
                 diasDescanso: document.getElementById('diasDescanso').value || "",
                 valorRodamientoDiario: document.getElementById('valorRodamientoDiario').value || "",
+                // New fields for PDF
+                nombreEmpleado: document.getElementById('nombreEmpleado').value || "",
+                identificacionEmpleado: document.getElementById('identificacionEmpleado').value || "",
+                formaPago: document.getElementById('formaPago').value || "",
+                fechaPago: document.getElementById('fechaPago').value || "",
+                diasPeriodoPago: document.getElementById('diasPeriodoPago').value || "",
                 jornadas: []
             };
 
@@ -934,6 +961,23 @@
             }
             if (data.hasOwnProperty('valorRodamientoDiario')) {
                 document.getElementById('valorRodamientoDiario').value = data.valorRodamientoDiario;
+            }
+
+            // Add new fields for PDF:
+            if (data.hasOwnProperty('nombreEmpleado')) {
+                document.getElementById('nombreEmpleado').value = data.nombreEmpleado;
+            }
+            if (data.hasOwnProperty('identificacionEmpleado')) {
+                document.getElementById('identificacionEmpleado').value = data.identificacionEmpleado;
+            }
+            if (data.hasOwnProperty('formaPago')) {
+                document.getElementById('formaPago').value = data.formaPago;
+            }
+            if (data.hasOwnProperty('fechaPago')) {
+                document.getElementById('fechaPago').value = data.fechaPago;
+            }
+            if (data.hasOwnProperty('diasPeriodoPago')) {
+                document.getElementById('diasPeriodoPago').value = data.diasPeriodoPago;
             }
 
             // Repopulate jornadas
@@ -1015,6 +1059,11 @@
             document.getElementById('salarioBase').value = '';
             document.getElementById('diasDescanso').value = '';
             document.getElementById('valorRodamientoDiario').value = '';
+            document.getElementById('nombreEmpleado').value = '';
+            document.getElementById('identificacionEmpleado').value = '';
+            document.getElementById('formaPago').value = '';
+            document.getElementById('fechaPago').value = '';
+            document.getElementById('diasPeriodoPago').value = '';
             contadorJornadas = 0;
             salarioBase = 0;
 
