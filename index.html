@@ -330,6 +330,16 @@
                 <input type="number" id="salarioBase" placeholder="Ingrese el salario básico">
                 <small>(Se usa para calcular el valor hora)</small>
             </div>
+            <div class="form-group">
+                <label for="diasDescanso">Número de Días de Descanso Remunerado:</label>
+                <input type="number" id="diasDescanso" placeholder="Ingrese número de días">
+                <small>(Se multiplicará por el valor de un día básico)</small>
+            </div>
+            <div class="form-group">
+                <label for="valorRodamientoDiario">Valor Rodamiento Diario:</label>
+                <input type="number" id="valorRodamientoDiario" placeholder="Ingrese el valor diario de rodamiento">
+                <small>(Se multiplicará por el número de jornadas calculadas)</small>
+            </div>
             
             <div id="jornadas-container">
                 <!-- Jornadas se agregarán aquí dinámicamente -->
@@ -422,6 +432,9 @@
                         <tr><td>Total Devengado</td><td class="text-right" id="resumen-devengado">$0</td></tr>
                         <tr><td>Total Prestaciones</td><td class="text-right" id="resumen-prestaciones">$0</td></tr>
                         <tr><td>Total Deducciones</td><td class="text-right" id="resumen-deducciones">$0</td></tr>
+                        <tr><td>Descanso Remunerado</td><td class="text-right" id="resumen-descanso-remunerado">$0</td></tr>
+                        <tr><td>Rodamiento</td><td class="text-right" id="resumen-rodamientos">$0</td></tr>
+                        <tr><td>Subsidio de Transporte</td><td class="text-right" id="resumen-subsidio-transporte">$0</td></tr>
                         <tr class="total-row highlight"><td>NETO A PAGAR</td><td class="text-right" id="neto-pagar">$0</td></tr>
                     </tbody>
                 </table>
@@ -454,6 +467,9 @@
             '2025-11-02', '2025-11-03', '2025-11-09', '2025-11-16', '2025-11-17', '2025-11-23', '2025-11-30',  
             '2025-12-07', '2025-12-08', '2025-12-14', '2025-12-21', '2025-12-25', '2025-12-28'
         ];
+
+        const SALARIO_MINIMO_COLOMBIA = 1300000; // COP
+        const SUBSIDIO_TRANSPORTE_MONTO = 200000; // COP
 
         // Variables globales para acumular resultados de múltiples jornadas
         let totalHorasOrdinarias = 0;
@@ -694,13 +710,13 @@
             document.getElementById('detalleTotal').textContent = format(totalDevengado);
             
             // Calcular y mostrar prestaciones sociales (sobre el total devengado)
-            calcularPrestaciones(totalDevengado);
+            const prestacionesCalculadas = calcularPrestaciones(totalDevengado);
             
             // Calcular y mostrar deducciones (sobre el total devengado)
-            calcularDeducciones(totalDevengado);
+            const deduccionesCalculadas = calcularDeducciones(totalDevengado);
             
             // Calcular y mostrar resumen
-            calcularResumen(totalDevengado);
+            calcularResumen(totalDevengado, prestacionesCalculadas, deduccionesCalculadas);
             
             // Mostrar todas las secciones de resultados
             document.getElementById('resultados-container').style.display = 'block';
@@ -728,6 +744,42 @@
             return totalPrestaciones;
         }
 
+        function calcularDescansoRemunerado(salarioBaseIngresado, numDiasDescanso) {
+            const dias = parseInt(numDiasDescanso, 10); // Ensure numDiasDescanso is an integer
+            const salario = parseFloat(salarioBaseIngresado);
+
+            if (salario > 0 && dias > 0) {
+                // Calculate value of one day's pay and multiply by number of rest days
+                // Use Math.round to handle potential floating point inaccuracies for currency.
+                return Math.round((salario / 30) * dias);
+            }
+            return 0; // Return 0 if inputs are not valid or non-positive
+        }
+
+        function calcularRodamientoTotal(valorRodamientoDiario, numeroDeJornadas) {
+            const valorDiario = parseFloat(valorRodamientoDiario);
+            const jornadas = parseInt(numeroDeJornadas, 10); // Should be an integer already from contadorJornadas
+
+            if (valorDiario > 0 && jornadas > 0) {
+                // Multiply daily rodamiento value by number of jornadas
+                // Use Math.round for currency.
+                return Math.round(valorDiario * jornadas);
+            }
+            return 0; // Return 0 if inputs are not valid or non-positive
+        }
+
+        function calcularSubsidioTransporte(salarioBaseIngresado, numeroDeJornadas) {
+            if (numeroDeJornadas <= 0) { // No subsidy if no jornadas worked
+                return 0;
+            }
+            if (salarioBaseIngresado > 0 && salarioBaseIngresado < (2 * SALARIO_MINIMO_COLOMBIA)) {
+                // Prorate the subsidy: (Total Subsidy / 30 days) * Number of Jornadas
+                // Use Math.round to avoid fractional cents for the final subsidy amount.
+                return Math.round((SUBSIDIO_TRANSPORTE_MONTO / 30) * numeroDeJornadas);
+            }
+            return 0; // Not eligible by salary
+        }
+
         // Función para calcular deducciones (sobre el total devengado)
         function calcularDeducciones(totalDevengado) {
             const format = (valor) => '$' + Math.round(valor).toLocaleString('es-CO');
@@ -744,16 +796,36 @@
         }
 
         // Función para calcular resumen
-        function calcularResumen(totalDevengado) {
+        function calcularResumen(totalDevengado, totalPrestacionesNumerico, totalDeduccionesNumerico) {
             const format = (valor) => '$' + Math.round(valor).toLocaleString('es-CO');
-            
-            const totalPrestaciones = parseFloat(document.getElementById('total-prestaciones').textContent.replace(/[^0-9]/g, ''));
-            const totalDeducciones = parseFloat(document.getElementById('total-deducciones').textContent.replace(/[^0-9]/g, ''));
-            const netoPagar = totalDevengado + totalPrestaciones - totalDeducciones;
+
+            const diasDescansoInput = document.getElementById('diasDescanso').value;
+            const valorRodamientoDiarioInput = document.getElementById('valorRodamientoDiario').value;
+
+            const diasDescansoValue = parseInt(diasDescansoInput, 10) || 0;
+            const valorRodamientoDiarioValue = parseFloat(valorRodamientoDiarioInput) || 0;
+
+            const descansoRemuneradoValor = calcularDescansoRemunerado(salarioBase, diasDescansoValue);
+            const rodamientoTotalValor = calcularRodamientoTotal(valorRodamientoDiarioValue, contadorJornadas);
+            const subsidioTransporteValor = calcularSubsidioTransporte(salarioBase, contadorJornadas);
+
+            // Use the passed-in numerical values directly
+            // Ensure they are numbers, default to 0 if undefined/NaN (though should be provided by mostrarResultados)
+            const prestaciones = Number(totalPrestacionesNumerico) || 0;
+            const deducciones = Number(totalDeduccionesNumerico) || 0;
+
+            const netoPagar = totalDevengado + prestaciones - deducciones + 
+                                subsidioTransporteValor + descansoRemuneradoValor + rodamientoTotalValor;
             
             document.getElementById('resumen-devengado').textContent = format(totalDevengado);
-            document.getElementById('resumen-prestaciones').textContent = format(totalPrestaciones);
-            document.getElementById('resumen-deducciones').textContent = format(totalDeducciones);
+            // Update summary table display fields with the accurate numerical values
+            document.getElementById('resumen-prestaciones').textContent = format(prestaciones);
+            document.getElementById('resumen-deducciones').textContent = format(deducciones);
+            
+            document.getElementById('resumen-descanso-remunerado').textContent = format(descansoRemuneradoValor);
+            document.getElementById('resumen-rodamientos').textContent = format(rodamientoTotalValor);
+            document.getElementById('resumen-subsidio-transporte').textContent = format(subsidioTransporteValor); 
+            
             document.getElementById('neto-pagar').textContent = format(netoPagar);
         }
 
@@ -761,6 +833,8 @@
         function resetTodo() {
             document.getElementById('jornadas-container').innerHTML = '';
             document.getElementById('salarioBase').value = '';
+            document.getElementById('diasDescanso').value = '';
+            document.getElementById('valorRodamientoDiario').value = '';
             contadorJornadas = 0;
             salarioBase = 0;
             
@@ -786,7 +860,10 @@
                 'detalleTotal',
                 'prima', 'cesantias', 'intereses-cesantias', 'total-prestaciones',
                 'salud-empleado', 'pension-empleado', 'total-deducciones',
-                'resumen-devengado', 'resumen-prestaciones', 'resumen-deducciones', 'neto-pagar'
+                'resumen-devengado', 'resumen-prestaciones', 'resumen-deducciones', 
+                'resumen-descanso-remunerado', 
+                'resumen-rodamientos', 
+                'resumen-subsidio-transporte', 'neto-pagar'
             ].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) element.textContent = id.startsWith('valor') || id.startsWith('total') || id.startsWith('resumen') || id.startsWith('neto') ? '$0' : '0';
