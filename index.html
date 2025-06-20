@@ -318,6 +318,57 @@
                 padding: 10px 12px;
             }
         }
+
+        @media print {
+            body * {
+                visibility: hidden; /* Hide everything in the body by default */
+            }
+            #payslip-print-view, #payslip-print-view * {
+                visibility: visible; /* Make the payslip view and its children visible */
+            }
+            #payslip-print-view {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%; /* Or a specific width like 200mm for A4 */
+                margin: 0;
+                padding: 10mm; /* Example padding */
+                border: none; /* Remove border for actual print if it was for on-screen view */
+                box-shadow: none; /* Remove shadow for print */
+                font-size: 10pt; /* Adjust base font size for print */
+            }
+            /* Hide the main calculator interface elements specifically as well */
+            .container > *:not(#payslip-print-view) {
+                display: none !important;
+            }
+            /* Ensure the payslip print view itself is not accidentally hidden by a general rule */
+            #payslip-print-view {
+                display: block !important; 
+            }
+
+            /* Optional: basic table styling for print if not already good from inline styles */
+            #payslip-print-view table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            #payslip-print-view th, #payslip-print-view td {
+                border: 1px solid #666; /* Darker borders for print */
+                padding: 4px 6px;
+                text-align: left;
+            }
+            #payslip-print-view th {
+                background-color: #eee !important; /* Light gray background for headers, ensure it overrides */
+                -webkit-print-color-adjust: exact; /* Enforce background color printing in Chrome/Safari */
+                print-color-adjust: exact;         /* Standard */
+            }
+            #payslip-print-view h2, #payslip-print-view h3 {
+                 color: #000 !important; /* Ensure headings are black for print */
+            }
+            /* Hide the print button itself when printing */
+            #btnPrintPdf {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -387,7 +438,7 @@
                     <thead>
                         <tr>
                             <th>Concepto</th>
-                            <th class="text-right">%</th>
+                            <th class="text-right">Detalle</th>
                             <th class="text-right">Valor</th>
                         </tr>
                     </thead>
@@ -395,6 +446,7 @@
                         <tr><td>Prima de Servicios</td><td class="text-right">8.33%</td><td class="text-right" id="prima">$0</td></tr>
                         <tr><td>Cesantías</td><td class="text-right">8.33%</td><td class="text-right" id="cesantias">$0</td></tr>
                         <tr><td>Int. Cesantías</td><td class="text-right">1%</td><td class="text-right" id="intereses-cesantias">$0</td></tr>
+                        <tr><td>Vacaciones</td><td class="text-right" id="vacaciones-dias-ganados">0.00 días</td><td class="text-right" id="vacaciones">$0</td></tr>
                         <tr class="total-row"><td class="text-right" colspan="2">Total Prestaciones</td><td class="text-right" id="total-prestaciones">$0</td></tr>
                     </tbody>
                 </table>
@@ -444,7 +496,10 @@
                 </table>
             </div>
         </div>
-        
+
+        <div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+            <button type="button" class="btn btn-accent" id="btnPrintPdf" style="display:none;">Imprimir PDF Comprobante</button>
+        </div>
         
         
         <p style="text-align:center; margin-top:15px; font-size:13px; color:var(--gray);">
@@ -454,6 +509,99 @@
             </a>
         </p>
     </div>
+
+    <div id="payslip-print-view" style="display:none; border: 1px solid #ccc; padding: 20px; margin: 20px auto; width: 95%; max-width: 700px; font-family: Arial, sans-serif; font-size: 12px;">
+        <h2 style="text-align: center; margin-bottom: 20px; color: #333;">COMPROBANTE DE NÓMINA</h2>
+        
+        <table style="width: 100%; margin-bottom: 15px; border-collapse: collapse;">
+            <tr>
+                <td style="padding: 4px;"><strong>Salario Base:</strong> <span id="pdf-salarioBaseHeader"></span></td>
+                <td style="padding: 4px; text-align: right;"><strong>Días Periodo Pagado:</strong> <span id="pdf-numeroDiasPago"></span></td>
+            </tr>
+            <tr>
+                <td style="padding: 4px;" colspan="2"><strong>Rodamiento (Periodo):</strong> <span id="pdf-rodamientoHeader"></span></td>
+            </tr>
+        </table>
+
+        <h3 style="margin-top: 20px; margin-bottom: 10px; color: #555; border-bottom: 1px solid #eee; padding-bottom: 5px;">Detalle de Conceptos</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+            <thead>
+                <tr style="background-color: #f0f0f0;">
+                    <th style="border: 1px solid #ddd; padding: 6px; text-align: left;">CONCEPTO</th>
+                    <th style="border: 1px solid #ddd; padding: 6px; text-align: right;">DIAS</th>
+                    <th style="border: 1px solid #ddd; padding: 6px; text-align: right;">DEVENGADO</th>
+                    <th style="border: 1px solid #ddd; padding: 6px; text-align: right;">DEDUCCIÓN</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Salario Básico</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-dias-salario"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-devengado-salario"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;"></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Horas Adicionales y Recargos</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;"></td> <!-- Dias for this might be complex, leave empty for now -->
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-devengado-horasextras"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;"></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Descanso Remunerado</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-dias-descanso"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-devengado-descanso"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;"></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rodamiento</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-dias-rodamiento"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-devengado-rodamiento"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;"></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Subsidio de Transporte</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-dias-subsidio"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-devengado-subsidio"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;"></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Aportes Salud</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-deduccion-salud"></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Aportes Pensión</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-deduccion-pension"></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr style="font-weight: bold;">
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" colspan="2">SUBTOTALES:</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-subtotal-devengado"></td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: right;" id="pdf-subtotal-deduccion"></td>
+                </tr>
+                <tr style="font-weight: bold; font-size: 1.1em;">
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;" colspan="3">TOTAL NETO PAGADO:</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;" id="pdf-totalNetoPagado"></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div style="margin-top: 40px; padding-top: 20px;">
+            <div style="display: inline-block; width: 45%; text-align: center;">
+                <hr style="border: 0; border-top: 1px solid #777; width: 80%; margin-bottom: 5px;">
+                Firma Empleado
+            </div>
+            <div style="display: inline-block; width: 45%; text-align: center; margin-left: 9%;">
+                <hr style="border: 0; border-top: 1px solid #777; width: 80%; margin-bottom: 5px;">
+                Firma Empleador/Autorizado
+            </div>
+        </div>
+    </div>
+
     <input type="file" id="importFile" accept=".json" style="display: none;">
     <script>
         // Festivos 2025
@@ -677,10 +825,6 @@
             
             const horaValor = salarioBase / 240;
             
-            // ... (Existing calculations for totalHorasOrdinarias, totalHorasNocturnas, etc., leading to totalDevengado)
-            // Ensure totalDevengado is calculated accurately here based on all hour types.
-            // This part is assumed to be correct from previous structure.
-            // Example:
             const valorOrdinario = Math.round(totalHorasOrdinarias * horaValor);
             const valorNocturno = Math.round(totalHorasNocturnas * horaValor * 1.35);
             const valorExtrasDiurnas = Math.round(totalExtrasDiurnas * horaValor * 1.25);
@@ -692,10 +836,7 @@
             totalDevengado = valorOrdinario + valorNocturno + valorExtrasDiurnas + 
                             valorExtrasNocturnas + valorFestivaDiurna + 
                             valorFestivaNocturna + valorExtraFestiva;
-            // (End of example totalDevengado calculation)
 
-
-            // Update the "DESGLOSE DE HORAS Y RECARGOS" table
             document.getElementById('horasOrdinarias').textContent = totalHorasOrdinarias;
             document.getElementById('valorOrdinario').textContent = format(valorOrdinario);
             document.getElementById('horasNocturnas').textContent = totalHorasNocturnas;
@@ -712,87 +853,88 @@
             document.getElementById('valorExtraFestiva').textContent = format(valorExtraFestiva);
             document.getElementById('detalleTotal').textContent = format(totalDevengado);
             
-            // Handle Prestaciones Sociales based on prestacionesActivas state
             const beneficiosContainer = document.getElementById('beneficios-container');
-            let prestacionesParaResumen; // This will be passed to calcularResumen
+            let prestacionesParaResumen; 
 
             if (prestacionesActivas) {
                 if (beneficiosContainer) beneficiosContainer.style.display = 'block';
-                // calcularPrestaciones updates its own table and returns the total
                 prestacionesParaResumen = calcularPrestaciones(totalDevengado); 
             } else {
                 if (beneficiosContainer) beneficiosContainer.style.display = 'none';
-                // Even if hidden, we might want to calculate it for internal consistency or if other parts depend on it.
-                // However, for the summary, it must be 0.
-                // Let's assume calcularPrestaciones doesn't have side effects beyond its own table if hidden.
-                // Forcing $0 in summary is key.
-                calcularPrestaciones(totalDevengado); // Calculate to update its own table (though hidden)
-                prestacionesParaResumen = 0; // Value for RESUMEN DE PAGO and NETO A PAGAR
+                calcularPrestaciones(totalDevengado); 
+                prestacionesParaResumen = 0; 
             }
             
             const deduccionesCalculadas = calcularDeducciones(totalDevengado);
             calcularResumen(totalDevengado, prestacionesParaResumen, deduccionesCalculadas); 
             
-            // Show result containers (beneficios-container display is now handled above)
             document.getElementById('resultados-container').style.display = 'block';
-            // beneficios-container display is set based on prestacionesActivas
             document.getElementById('deducciones-container').style.display = 'block';
             document.getElementById('resumen-container').style.display = 'block';
+
+            const btnPrint = document.getElementById('btnPrintPdf');
+            if (btnPrint) {
+                btnPrint.style.display = 'inline-block'; 
+            }
         }
 
         // Función para calcular prestaciones sociales (sobre el total devengado)
         function calcularPrestaciones(totalDevengado) {
             const format = (valor) => '$' + Math.round(valor).toLocaleString('es-CO');
             
-            // Calculamos sobre el total devengado
-            const prima = totalDevengado * 0.0833; // 8.33% del total devengado
-            const cesantias = totalDevengado * 0.0833; // 8.33% del total devengado
-            const interesesCesantias = cesantias * 0.01; // 1% de las cesantías
+            const prima = totalDevengado * 0.0833; 
+            const cesantias = totalDevengado * 0.0833; 
+            const interesesCesantias = cesantias * 0.01; 
             
-            const totalPrestaciones = prima + cesantias + interesesCesantias;
+            // Nueva lógica para vacaciones
+            const diasDescansoValueForVac = parseInt(document.getElementById('diasDescanso').value, 10) || 0;
+            const dias_base_vacaciones_periodo = diasDescansoValueForVac + contadorJornadas;
+            const dias_vacaciones_ganados_periodo = (dias_base_vacaciones_periodo / 360) * 15;
+            const valor_de_un_dia_vacacion = salarioBase > 0 ? salarioBase / 30 : 0;
+            const vacaciones_monetarias_periodo = Math.round(dias_vacaciones_ganados_periodo * valor_de_un_dia_vacacion);
+
+            document.getElementById('vacaciones-dias-ganados').textContent = dias_vacaciones_ganados_periodo.toFixed(2) + " días";
+            document.getElementById('vacaciones').textContent = format(vacaciones_monetarias_periodo);
+            
+            const totalPrestaciones = prima + cesantias + interesesCesantias + vacaciones_monetarias_periodo;
             
             document.getElementById('prima').textContent = format(prima);
             document.getElementById('cesantias').textContent = format(cesantias);
             document.getElementById('intereses-cesantias').textContent = format(interesesCesantias);
+            // La línea para 'vacaciones' ya está arriba
             document.getElementById('total-prestaciones').textContent = format(totalPrestaciones);
             
             return totalPrestaciones;
         }
 
         function calcularDescansoRemunerado(salarioBaseIngresado, numDiasDescanso) {
-            const dias = parseInt(numDiasDescanso, 10); // Ensure numDiasDescanso is an integer
+            const dias = parseInt(numDiasDescanso, 10); 
             const salario = parseFloat(salarioBaseIngresado);
 
             if (salario > 0 && dias > 0) {
-                // Calculate value of one day's pay and multiply by number of rest days
-                // Use Math.round to handle potential floating point inaccuracies for currency.
                 return Math.round((salario / 30) * dias);
             }
-            return 0; // Return 0 if inputs are not valid or non-positive
+            return 0; 
         }
 
         function calcularRodamientoTotal(valorRodamientoDiario, numeroDeJornadas) {
             const valorDiario = parseFloat(valorRodamientoDiario);
-            const jornadas = parseInt(numeroDeJornadas, 10); // Should be an integer already from contadorJornadas
+            const jornadas = parseInt(numeroDeJornadas, 10); 
 
             if (valorDiario > 0 && jornadas > 0) {
-                // Multiply daily rodamiento value by number of jornadas
-                // Use Math.round for currency.
                 return Math.round(valorDiario * jornadas);
             }
-            return 0; // Return 0 if inputs are not valid or non-positive
+            return 0; 
         }
 
-        function calcularSubsidioTransporte(salarioBaseIngresado, numeroDeJornadas) {
-            if (numeroDeJornadas <= 0) { // No subsidy if no jornadas worked
+        function calcularSubsidioTransporte(salarioBaseIngresado, numeroDiasBaseParaSubsidio) {
+            if (numeroDiasBaseParaSubsidio <= 0) { 
                 return 0;
             }
             if (salarioBaseIngresado > 0 && salarioBaseIngresado < (2 * SALARIO_MINIMO_COLOMBIA)) {
-                // Prorate the subsidy: (Total Subsidy / 30 days) * Number of Jornadas
-                // Use Math.round to avoid fractional cents for the final subsidy amount.
-                return Math.round((SUBSIDIO_TRANSPORTE_MONTO / 30) * numeroDeJornadas);
+                return Math.round((SUBSIDIO_TRANSPORTE_MONTO / 30) * numeroDiasBaseParaSubsidio);
             }
-            return 0; // Not eligible by salary
+            return 0; 
         }
 
         // Función para calcular deducciones (sobre el total devengado)
@@ -819,36 +961,37 @@
 
             const diasDescansoValue = parseInt(diasDescansoInput, 10) || 0;
             const valorRodamientoDiarioValue = parseFloat(valorRodamientoDiarioInput) || 0;
-
+            
+            const diasBaseSubsidio = diasDescansoValue + contadorJornadas;
+            const subsidioTransporteValor = calcularSubsidioTransporte(salarioBase, diasBaseSubsidio);
             const descansoRemuneradoValor = calcularDescansoRemunerado(salarioBase, diasDescansoValue);
             const rodamientoTotalValor = calcularRodamientoTotal(valorRodamientoDiarioValue, contadorJornadas);
-            const subsidioTransporteValor = calcularSubsidioTransporte(salarioBase, contadorJornadas);
 
-            // Update detail cells
+
             const detalleDevengadoElem = document.getElementById('resumen-devengado-detalle');
             if (detalleDevengadoElem) {
-                detalleDevengadoElem.textContent = contadorJornadas > 0 ? `${contadorJornadas} día(s)` : ''; // Changed
+                detalleDevengadoElem.textContent = contadorJornadas > 0 ? `${contadorJornadas} día(s)` : '';
             }
 
             const detalleDescansoElem = document.getElementById('resumen-descanso-detalle');
             if (detalleDescansoElem) {
-                detalleDescansoElem.textContent = diasDescansoValue > 0 ? `${diasDescansoValue} día(s)` : ''; // Stays "día(s)"
+                detalleDescansoElem.textContent = diasDescansoValue > 0 ? `${diasDescansoValue} día(s)` : '';
             }
 
             const detalleRodamientoElem = document.getElementById('resumen-rodamiento-detalle');
             if (detalleRodamientoElem) {
-                detalleRodamientoElem.textContent = contadorJornadas > 0 && rodamientoTotalValor > 0 ? `${contadorJornadas} día(s)` : ''; // Changed
+                detalleRodamientoElem.textContent = contadorJornadas > 0 && rodamientoTotalValor > 0 ? `${contadorJornadas} día(s)` : '';
             }
 
             const detalleSubsidioElem = document.getElementById('resumen-subsidio-detalle');
             if (detalleSubsidioElem) {
                 if (subsidioTransporteValor > 0) {
-                    detalleSubsidioElem.textContent = `${contadorJornadas} día(s)`; // Changed
+                    detalleSubsidioElem.textContent = `${diasBaseSubsidio} día(s)`; 
                 } else {
                     if (salarioBase >= (2 * SALARIO_MINIMO_COLOMBIA)) {
                         detalleSubsidioElem.textContent = 'Salario no aplica';
-                    } else if (contadorJornadas === 0) {
-                        detalleSubsidioElem.textContent = '0 días'; // Changed
+                    } else if (diasBaseSubsidio === 0) { 
+                        detalleSubsidioElem.textContent = '0 días';
                     } else {
                          detalleSubsidioElem.textContent = ''; 
                     }
@@ -877,15 +1020,16 @@
                 salarioBase: document.getElementById('salarioBase').value || "",
                 diasDescanso: document.getElementById('diasDescanso').value || "",
                 valorRodamientoDiario: document.getElementById('valorRodamientoDiario').value || "",
+                // nombreEmpleado: document.getElementById('nombreEmpleado').value || "", // REMOVED
+                // identificacionEmpleado: document.getElementById('identificacionEmpleado').value || "", // REMOVED
+                // formaPago: document.getElementById('formaPago').value || "", // REMOVED
+                // fechaPago: document.getElementById('fechaPago').value || "", // REMOVED
                 jornadas: []
             };
 
             const jornadaItems = document.querySelectorAll('#jornadas-container .jornada-item');
             jornadaItems.forEach(item => {
-                // Assuming the input IDs within each jornada-item follow a pattern.
-                // When agregarJornada creates items like 'jornada-1', the inputs are 'jornada-1-fechaIngreso', etc.
-                // We need to extract the base ID of the item (e.g., 'jornada-1') to find its children.
-                const itemId = item.id; // e.g., "jornada-1", "jornada-2"
+                const itemId = item.id; 
                 const fechaIngresoElem = document.getElementById(`${itemId}-fechaIngreso`);
                 const fechaSalidaElem = document.getElementById(`${itemId}-fechaSalida`);
 
@@ -909,23 +1053,16 @@
             document.body.removeChild(a);
 
             URL.revokeObjectURL(url);
-            
-            // Optional: alert or message user
-            // alert('Progreso guardado como calculadora_nomina_progreso.json');
         }
 
         function cargarProgreso(data) {
-            // Basic validation of the data structure
             if (!data || typeof data.salarioBase === 'undefined' || typeof data.jornadas === 'undefined' || !Array.isArray(data.jornadas)) {
                 alert('Error: El archivo de progreso no tiene el formato esperado.');
                 return;
             }
 
-            // Clear existing calculator state
             resetTodo(); 
 
-            // Repopulate main input fields
-            // Use data.hasOwnProperty to ensure the property exists before assigning
             if (data.hasOwnProperty('salarioBase')) {
                 document.getElementById('salarioBase').value = data.salarioBase;
             }
@@ -935,19 +1072,24 @@
             if (data.hasOwnProperty('valorRodamientoDiario')) {
                 document.getElementById('valorRodamientoDiario').value = data.valorRodamientoDiario;
             }
+       
+            // if (data.hasOwnProperty('nombreEmpleado')) { // REMOVED
+            //     document.getElementById('nombreEmpleado').value = data.nombreEmpleado; // REMOVED
+            // } // REMOVED
+            // if (data.hasOwnProperty('identificacionEmpleado')) { // REMOVED
+            //     document.getElementById('identificacionEmpleado').value = data.identificacionEmpleado; // REMOVED
+            // } // REMOVED
+            // if (data.hasOwnProperty('formaPago')) { // REMOVED
+            //     document.getElementById('formaPago').value = data.formaPago; // REMOVED
+            // } // REMOVED
+            // if (data.hasOwnProperty('fechaPago')) { // REMOVED
+            //     document.getElementById('fechaPago').value = data.fechaPago; // REMOVED
+            // } // REMOVED
 
-            // Repopulate jornadas
-            // Note: resetTodo() sets contadorJornadas to 0.
-            // agregarJornada() increments contadorJornadas *before* creating the element ID.
-            // So, the first jornada added will be 'jornada-1', second 'jornada-2', etc.
             data.jornadas.forEach(jornadaData => {
                 if (jornadaData && typeof jornadaData.fechaIngreso !== 'undefined' && typeof jornadaData.fechaSalida !== 'undefined') {
-                    agregarJornada(); // This creates a new jornada item and increments contadorJornadas
-
-                    // The newly added jornada will have an ID like 'jornada-' + contadorJornadas
-                    // (assuming agregarJornada updates contadorJornadas correctly before we use it here)
-                    // Let's ensure IDs are correct: agregarJornada sets h3 to "Jornada X", where X is current contadorJornadas
-                    const currentJornadaIdSuffix = contadorJornadas; // contadorJornadas is now the number of the one just added
+                    agregarJornada(); 
+                    const currentJornadaIdSuffix = contadorJornadas; 
 
                     const ingresoInput = document.getElementById(`jornada-${currentJornadaIdSuffix}-fechaIngreso`);
                     const salidaInput = document.getElementById(`jornada-${currentJornadaIdSuffix}-fechaSalida`);
@@ -967,46 +1109,81 @@
         }
 
         function togglePrestaciones() {
-            prestacionesActivas = !prestacionesActivas; // Invert the state
+            prestacionesActivas = !prestacionesActivas; 
 
             const btnToggle = document.getElementById('btnTogglePrestaciones');
             if (btnToggle) {
                 btnToggle.textContent = prestacionesActivas ? 'Prestaciones: ON' : 'Prestaciones: OFF';
             }
 
-            // Recalculate everything to reflect the change
-            // Need to ensure salarioBase has a value if no jornadas are present,
-            // or that calcularTodasJornadas handles it.
-            // For now, assume it's okay to call, or user has already input salary.
-            if (document.getElementById('salarioBase').value) { // Only recalculate if salary base is entered
+            if (document.getElementById('salarioBase').value) { 
                  calcularTodasJornadas();
             } else {
-                // If no salary is entered, just update button and visibility of the section
-                // (visibility part will be handled in mostrarResultados based on prestacionesActivas)
-                // but we might need to manually refresh parts of the display if calcularTodasJornadas is skipped.
-                // For simplicity now, we'll rely on calcularTodasJornadas.
-                // A more refined approach might be to just call mostrarResultados if totalDevengado is already computed
-                // and only the summary needs re-evaluation.
-                // However, if no calculation has run, there's nothing to update in the summary anyway.
-                // Let's ensure the card visibility is handled even if calculation doesn't run.
                 const beneficiosContainer = document.getElementById('beneficios-container');
                 if (beneficiosContainer) {
                     beneficiosContainer.style.display = prestacionesActivas ? 'block' : 'none';
                 }
-                // If we hide it here, also need to ensure resumen-prestaciones is $0 if no recalc
-                // This is getting complex, better to ensure calcularTodasJornadas or mostrarResultados runs.
-                // Let's stick to the plan: call calcularTodasJornadas, which calls mostrarResultados.
-                // The user should have salary and jornadas if they want meaningful output.
-                // If they toggle before calculating, the effect will be seen on the *next* calculation.
-                // This is acceptable.
-                // The most direct impact of the toggle without a full recalc would be on an *existing* calculation.
-                // So, if a calculation is already displayed, we want to refresh it.
-
-                // Let's refine: if results are visible, then recalculate. Otherwise, the change applies at next calculation.
                 if (document.getElementById('resultados-container').style.display === 'block') {
                      calcularTodasJornadas();
                 }
             }
+        }
+
+        function populateAndPrintPayslip() {
+            const formatCurrency = (value) => '$' + Math.round(value).toLocaleString('es-CO');
+            const getNumericValueFromDOM = (elementId) => {
+                const text = document.getElementById(elementId) ? document.getElementById(elementId).textContent : '$0';
+                return parseFloat(text.replace(/[^0-9,-]/g, '').replace(',', '.')) || 0;
+            };
+            const getInputValue = (elementId) => document.getElementById(elementId) ? document.getElementById(elementId).value : '';
+            const getInputNumberValue = (elementId) => parseFloat(getInputValue(elementId)) || 0;
+            
+            const salarioBaseInput = getInputNumberValue('salarioBase'); 
+            
+            const totalDevengadoCalculadora = getNumericValueFromDOM('detalleTotal'); 
+            const valorOrdinarioCalculadora = getNumericValueFromDOM('valorOrdinario'); 
+            const descansoRemuneradoCalculadora = getNumericValueFromDOM('resumen-descanso-remunerado');
+            const diasDescansoInputVal = getInputNumberValue('diasDescanso'); 
+            const rodamientoTotalCalculadora = getNumericValueFromDOM('resumen-rodamientos');
+            const subsidioTransporteCalculadora = getNumericValueFromDOM('resumen-subsidio-transporte');
+            
+            const saludDeduccionCalculadora = getNumericValueFromDOM('salud-empleado'); 
+            const pensionDeduccionCalculadora = getNumericValueFromDOM('pension-empleado'); 
+            const netoPagarCalculadora = getNumericValueFromDOM('neto-pagar'); 
+
+            document.getElementById('pdf-salarioBaseHeader').textContent = formatCurrency(salarioBaseInput);
+            document.getElementById('pdf-numeroDiasPago').textContent = contadorJornadas > 0 ? contadorJornadas : '0'; 
+            document.getElementById('pdf-rodamientoHeader').textContent = formatCurrency(rodamientoTotalCalculadora);
+
+            document.getElementById('pdf-dias-salario').textContent = contadorJornadas > 0 ? contadorJornadas : '0';
+            
+            const devengadoSalarioBasicoPdf = valorOrdinarioCalculadora; // As per plan
+            document.getElementById('pdf-devengado-salario').textContent = formatCurrency(devengadoSalarioBasicoPdf);
+
+            let devengadoHorasExtrasPdf = Math.max(0, totalDevengadoCalculadora - devengadoSalarioBasicoPdf);
+            document.getElementById('pdf-devengado-horasextras').textContent = formatCurrency(devengadoHorasExtrasPdf);
+
+            document.getElementById('pdf-dias-descanso').textContent = diasDescansoInputVal > 0 ? diasDescansoInputVal : '';
+            document.getElementById('pdf-devengado-descanso').textContent = formatCurrency(descansoRemuneradoCalculadora);
+            
+            document.getElementById('pdf-dias-rodamiento').textContent = contadorJornadas > 0 && rodamientoTotalCalculadora > 0 ? contadorJornadas : '';
+            document.getElementById('pdf-devengado-rodamiento').textContent = formatCurrency(rodamientoTotalCalculadora);
+
+            const diasBaseSubsidioPdf = diasDescansoInputVal + contadorJornadas;
+            document.getElementById('pdf-dias-subsidio').textContent = subsidioTransporteCalculadora > 0 && diasBaseSubsidioPdf > 0 ? diasBaseSubsidioPdf : '';
+            document.getElementById('pdf-devengado-subsidio').textContent = formatCurrency(subsidioTransporteCalculadora);
+
+            document.getElementById('pdf-deduccion-salud').textContent = formatCurrency(saludDeduccionCalculadora);
+            document.getElementById('pdf-deduccion-pension').textContent = formatCurrency(pensionDeduccionCalculadora);
+
+            const subtotalDevengadoPdf = devengadoSalarioBasicoPdf + devengadoHorasExtrasPdf + descansoRemuneradoCalculadora + rodamientoTotalCalculadora + subsidioTransporteCalculadora;
+            const subtotalDeduccionPdf = saludDeduccionCalculadora + pensionDeduccionCalculadora;
+
+            document.getElementById('pdf-subtotal-devengado').textContent = formatCurrency(subtotalDevengadoPdf);
+            document.getElementById('pdf-subtotal-deduccion').textContent = formatCurrency(subtotalDeduccionPdf);
+            document.getElementById('pdf-totalNetoPagado').textContent = formatCurrency(netoPagarCalculadora);
+            
+            window.print();
         }
 
         // Función para resetear todo
@@ -1015,17 +1192,19 @@
             document.getElementById('salarioBase').value = '';
             document.getElementById('diasDescanso').value = '';
             document.getElementById('valorRodamientoDiario').value = '';
+            // document.getElementById('nombreEmpleado').value = ''; // REMOVED
+            // document.getElementById('identificacionEmpleado').value = ''; // REMOVED
+            // document.getElementById('formaPago').value = ''; // REMOVED
+            // document.getElementById('fechaPago').value = ''; // REMOVED
             contadorJornadas = 0;
             salarioBase = 0;
 
-            // Reset Prestaciones Sociales toggle state and button
-            prestacionesActivas = true; // Reset to default state (ON)
+            prestacionesActivas = true; 
             const btnTogglePrestacionesElem = document.getElementById('btnTogglePrestaciones');
             if (btnTogglePrestacionesElem) {
                 btnTogglePrestacionesElem.textContent = 'Prestaciones: ON';
             }
             
-            // Resetear acumuladores
             totalHorasOrdinarias = 0;
             totalHorasNocturnas = 0;
             totalExtrasDiurnas = 0;
@@ -1035,7 +1214,6 @@
             totalExtraFestiva = 0;
             totalDevengado = 0;
             
-            // Resetear tablas
             [
                 'horasOrdinarias', 'valorOrdinario',
                 'horasNocturnas', 'valorNocturno',
@@ -1045,7 +1223,7 @@
                 'festivaNocturna', 'valorFestivaNocturna',
                 'horaExtraFestiva', 'valorExtraFestiva',
                 'detalleTotal',
-                'prima', 'cesantias', 'intereses-cesantias', 'total-prestaciones',
+                'prima', 'cesantias', 'intereses-cesantias', 'vacaciones', 'vacaciones-dias-ganados', 'total-prestaciones',
                 'salud-empleado', 'pension-empleado', 'total-deducciones',
                 'resumen-devengado', 'resumen-devengado-detalle', 
                 'resumen-prestaciones', 'resumen-deducciones', 
@@ -1056,28 +1234,33 @@
             ].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
-                    if (id.endsWith('-detalle')) { // Specific check for new detail cells
+                    if (id === 'vacaciones-dias-ganados') {
+                        element.textContent = '0.00 días';
+                    } else if (id.endsWith('-detalle')) { 
                         element.textContent = ''; 
-                    } else if (id.startsWith('valor') || id.startsWith('total') || id.startsWith('resumen') || id.startsWith('neto') || id.includes('prima') || id.includes('cesantias') || id.includes('intereses')) {
+                    } else if (id.startsWith('valor') || id.startsWith('total') || id.startsWith('resumen') || id.startsWith('neto') || id.includes('prima') || id.includes('cesantias') || id.includes('intereses') || id.includes('vacaciones')) {
                         element.textContent = '$0';
                     } else {
-                        element.textContent = '0'; // For hour counts etc.
+                        element.textContent = '0'; 
                     }
                 }
             });
             
-            // Ocultar secciones de resultados
             document.getElementById('resultados-container').style.display = 'none';
             document.getElementById('beneficios-container').style.display = 'none';
             document.getElementById('deducciones-container').style.display = 'none';
             document.getElementById('resumen-container').style.display = 'none';
+            
+            const btnPrint = document.getElementById('btnPrintPdf');
+            if (btnPrint) {
+                btnPrint.style.display = 'none';
+            }
         }
 
         // Agregar una jornada inicial al cargar la página
         window.onload = function() {
-            agregarJornada(); // Keep existing functionality
+            agregarJornada(); 
 
-            // Attach event listener for Guardar Progreso
             const btnGuardar = document.getElementById('btnGuardarProgreso');
             if (btnGuardar) {
                 btnGuardar.addEventListener('click', guardarProgreso);
@@ -1096,11 +1279,11 @@
                 importFileInput.addEventListener('change', function(event) {
                     const file = event.target.files[0];
                     if (!file) {
-                        return; // No file selected
+                        return; 
                     }
                     if (file.type !== 'application/json') {
                         alert('Por favor, seleccione un archivo .json válido.');
-                        event.target.value = null; // Reset file input
+                        event.target.value = null; 
                         return;
                     }
 
@@ -1108,18 +1291,16 @@
                     reader.onload = function(e) {
                         try {
                             const jsonData = JSON.parse(e.target.result);
-                            // Call cargarProgreso (to be implemented in next step)
                             cargarProgreso(jsonData); 
                         } catch (error) {
                             alert('Error al leer el archivo: Formato JSON inválido.\n' + error.message);
                         } finally {
-                            // Reset file input to allow re-importing the same file if needed
                             event.target.value = null;
                         }
                     };
                     reader.onerror = function() {
                         alert('Error al leer el archivo.');
-                        event.target.value = null; // Reset file input
+                        event.target.value = null; 
                     };
                     reader.readAsText(file);
                 });
@@ -1128,6 +1309,11 @@
             const btnTogglePrestacionesElem = document.getElementById('btnTogglePrestaciones');
             if (btnTogglePrestacionesElem) {
                 btnTogglePrestacionesElem.addEventListener('click', togglePrestaciones);
+            }
+
+            const btnPrintPdfElem = document.getElementById('btnPrintPdf');
+            if (btnPrintPdfElem) {
+                btnPrintPdfElem.addEventListener('click', populateAndPrintPayslip);
             }
         };
     </script>
