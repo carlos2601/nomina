@@ -349,6 +349,8 @@
                 <button type="button" class="btn btn-success" onclick="agregarJornada()">+ Agregar Jornada</button>
                 <button type="button" class="btn btn-primary" onclick="calcularTodasJornadas()">Calcular Todas</button>
                 <button type="button" class="btn btn-danger" onclick="resetTodo()">Borrar Todo</button>
+                <button type="button" class="btn btn-info" id="btnGuardarProgreso">Guardar Progreso</button>
+                <button type="button" class="btn btn-warning" id="btnImportarProgreso">Importar Progreso</button>
             </div>
         </div>
 
@@ -450,7 +452,7 @@
             </a>
         </p>
     </div>
-
+    <input type="file" id="importFile" accept=".json" style="display: none;">
     <script>
         // Festivos 2025
         const festivos2025 = [
@@ -829,6 +831,100 @@
             document.getElementById('neto-pagar').textContent = format(netoPagar);
         }
 
+        function guardarProgreso() {
+            const data = {
+                salarioBase: document.getElementById('salarioBase').value || "",
+                diasDescanso: document.getElementById('diasDescanso').value || "",
+                valorRodamientoDiario: document.getElementById('valorRodamientoDiario').value || "",
+                jornadas: []
+            };
+
+            const jornadaItems = document.querySelectorAll('#jornadas-container .jornada-item');
+            jornadaItems.forEach(item => {
+                // Assuming the input IDs within each jornada-item follow a pattern.
+                // When agregarJornada creates items like 'jornada-1', the inputs are 'jornada-1-fechaIngreso', etc.
+                // We need to extract the base ID of the item (e.g., 'jornada-1') to find its children.
+                const itemId = item.id; // e.g., "jornada-1", "jornada-2"
+                const fechaIngresoElem = document.getElementById(`${itemId}-fechaIngreso`);
+                const fechaSalidaElem = document.getElementById(`${itemId}-fechaSalida`);
+
+                if (fechaIngresoElem && fechaSalidaElem) {
+                    data.jornadas.push({
+                        fechaIngreso: fechaIngresoElem.value,
+                        fechaSalida: fechaSalidaElem.value
+                    });
+                }
+            });
+
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'calculadora_nomina_progreso.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            URL.revokeObjectURL(url);
+
+            // Optional: alert or message user
+            // alert('Progreso guardado como calculadora_nomina_progreso.json');
+        }
+
+        function cargarProgreso(data) {
+            // Basic validation of the data structure
+            if (!data || typeof data.salarioBase === 'undefined' || typeof data.jornadas === 'undefined' || !Array.isArray(data.jornadas)) {
+                alert('Error: El archivo de progreso no tiene el formato esperado.');
+                return;
+            }
+
+            // Clear existing calculator state
+            resetTodo();
+
+            // Repopulate main input fields
+            // Use data.hasOwnProperty to ensure the property exists before assigning
+            if (data.hasOwnProperty('salarioBase')) {
+                document.getElementById('salarioBase').value = data.salarioBase;
+            }
+            if (data.hasOwnProperty('diasDescanso')) {
+                document.getElementById('diasDescanso').value = data.diasDescanso;
+            }
+            if (data.hasOwnProperty('valorRodamientoDiario')) {
+                document.getElementById('valorRodamientoDiario').value = data.valorRodamientoDiario;
+            }
+
+            // Repopulate jornadas
+            // Note: resetTodo() sets contadorJornadas to 0.
+            // agregarJornada() increments contadorJornadas *before* creating the element ID.
+            // So, the first jornada added will be 'jornada-1', second 'jornada-2', etc.
+            data.jornadas.forEach(jornadaData => {
+                if (jornadaData && typeof jornadaData.fechaIngreso !== 'undefined' && typeof jornadaData.fechaSalida !== 'undefined') {
+                    agregarJornada(); // This creates a new jornada item and increments contadorJornadas
+
+                    // The newly added jornada will have an ID like 'jornada-' + contadorJornadas
+                    // (assuming agregarJornada updates contadorJornadas correctly before we use it here)
+                    // Let's ensure IDs are correct: agregarJornada sets h3 to "Jornada X", where X is current contadorJornadas
+                    const currentJornadaIdSuffix = contadorJornadas; // contadorJornadas is now the number of the one just added
+
+                    const ingresoInput = document.getElementById(`jornada-${currentJornadaIdSuffix}-fechaIngreso`);
+                    const salidaInput = document.getElementById(`jornada-${currentJornadaIdSuffix}-fechaSalida`);
+
+                    if (ingresoInput && salidaInput) {
+                        ingresoInput.value = jornadaData.fechaIngreso;
+                        salidaInput.value = jornadaData.fechaSalida;
+                    } else {
+                        console.warn(`No se encontraron los campos de fecha para la jornada ${currentJornadaIdSuffix} durante la importación.`);
+                    }
+                } else {
+                    console.warn("Datos de jornada incompletos en el archivo importado:", jornadaData);
+                }
+            });
+
+            alert('Progreso cargado exitosamente. Por favor, haga clic en "Calcular Todas" para ver los resultados.');
+        }
+
         // Función para resetear todo
         function resetTodo() {
             document.getElementById('jornadas-container').innerHTML = '';
@@ -878,7 +974,55 @@
 
         // Agregar una jornada inicial al cargar la página
         window.onload = function() {
-            agregarJornada();
+            agregarJornada(); // Keep existing functionality
+
+            // Attach event listener for Guardar Progreso
+            const btnGuardar = document.getElementById('btnGuardarProgreso');
+            if (btnGuardar) {
+                btnGuardar.addEventListener('click', guardarProgreso);
+            }
+
+            const btnImportar = document.getElementById('btnImportarProgreso');
+            const importFileInput = document.getElementById('importFile');
+
+            if (btnImportar && importFileInput) {
+                btnImportar.addEventListener('click', function() {
+                    importFileInput.click();
+                });
+            }
+
+            if (importFileInput) {
+                importFileInput.addEventListener('change', function(event) {
+                    const file = event.target.files[0];
+                    if (!file) {
+                        return; // No file selected
+                    }
+                    if (file.type !== 'application/json') {
+                        alert('Por favor, seleccione un archivo .json válido.');
+                        event.target.value = null; // Reset file input
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const jsonData = JSON.parse(e.target.result);
+                            // Call cargarProgreso (to be implemented in next step)
+                            cargarProgreso(jsonData);
+                        } catch (error) {
+                            alert('Error al leer el archivo: Formato JSON inválido.\n' + error.message);
+                        } finally {
+                            // Reset file input to allow re-importing the same file if needed
+                            event.target.value = null;
+                        }
+                    };
+                    reader.onerror = function() {
+                        alert('Error al leer el archivo.');
+                        event.target.value = null; // Reset file input
+                    };
+                    reader.readAsText(file);
+                });
+            }
         };
     </script>
 </body>
