@@ -351,6 +351,7 @@
                 <button type="button" class="btn btn-danger" onclick="resetTodo()">Borrar Todo</button>
                 <button type="button" class="btn btn-primary" id="btnGuardarProgreso">Guardar Progreso</button>
                 <button type="button" class="btn btn-success" id="btnImportarProgreso">Importar Progreso</button>
+                <button type="button" class="btn btn-secondary" id="btnTogglePrestaciones">Prestaciones: ON</button>
             </div>
         </div>
 
@@ -484,6 +485,7 @@
         let totalDevengado = 0;
         let contadorJornadas = 0;
         let salarioBase = 0;
+        let prestacionesActivas = true;
 
         // Función para obtener la fecha actual con hora fija a las 17:00
         function obtenerFechaActual() {
@@ -670,11 +672,14 @@
 
         // Función para mostrar los resultados acumulados
         function mostrarResultados() {
-            const format = (valor) => '$' + valor.toLocaleString('es-CO');
+            const format = (valor) => '$' + Math.round(valor).toLocaleString('es-CO'); // Ensure Math.round for format
 
             const horaValor = salarioBase / 240;
 
-            // Calcular valores monetarios
+            // ... (Existing calculations for totalHorasOrdinarias, totalHorasNocturnas, etc., leading to totalDevengado)
+            // Ensure totalDevengado is calculated accurately here based on all hour types.
+            // This part is assumed to be correct from previous structure.
+            // Example:
             const valorOrdinario = Math.round(totalHorasOrdinarias * horaValor);
             const valorNocturno = Math.round(totalHorasNocturnas * horaValor * 1.35);
             const valorExtrasDiurnas = Math.round(totalExtrasDiurnas * horaValor * 1.25);
@@ -686,43 +691,50 @@
             totalDevengado = valorOrdinario + valorNocturno + valorExtrasDiurnas +
                             valorExtrasNocturnas + valorFestivaDiurna +
                             valorFestivaNocturna + valorExtraFestiva;
+            // (End of example totalDevengado calculation)
 
-            // Actualizar tabla de resultados
+
+            // Update the "DESGLOSE DE HORAS Y RECARGOS" table
             document.getElementById('horasOrdinarias').textContent = totalHorasOrdinarias;
             document.getElementById('valorOrdinario').textContent = format(valorOrdinario);
-
             document.getElementById('horasNocturnas').textContent = totalHorasNocturnas;
             document.getElementById('valorNocturno').textContent = format(valorNocturno);
-
             document.getElementById('extrasDiurnas').textContent = totalExtrasDiurnas;
             document.getElementById('valorExtrasDiurnas').textContent = format(valorExtrasDiurnas);
-
             document.getElementById('extrasNocturnas').textContent = totalExtrasNocturnas;
             document.getElementById('valorExtrasNocturnas').textContent = format(valorExtrasNocturnas);
-
             document.getElementById('festivaDiurna').textContent = totalFestivaDiurna;
             document.getElementById('valorFestivaDiurna').textContent = format(valorFestivaDiurna);
-
             document.getElementById('festivaNocturna').textContent = totalFestivaNocturna;
             document.getElementById('valorFestivaNocturna').textContent = format(valorFestivaNocturna);
-
             document.getElementById('horaExtraFestiva').textContent = totalExtraFestiva;
             document.getElementById('valorExtraFestiva').textContent = format(valorExtraFestiva);
-
             document.getElementById('detalleTotal').textContent = format(totalDevengado);
 
-            // Calcular y mostrar prestaciones sociales (sobre el total devengado)
-            const prestacionesCalculadas = calcularPrestaciones(totalDevengado);
+            // Handle Prestaciones Sociales based on prestacionesActivas state
+            const beneficiosContainer = document.getElementById('beneficios-container');
+            let prestacionesParaResumen; // This will be passed to calcularResumen
 
-            // Calcular y mostrar deducciones (sobre el total devengado)
+            if (prestacionesActivas) {
+                if (beneficiosContainer) beneficiosContainer.style.display = 'block';
+                // calcularPrestaciones updates its own table and returns the total
+                prestacionesParaResumen = calcularPrestaciones(totalDevengado);
+            } else {
+                if (beneficiosContainer) beneficiosContainer.style.display = 'none';
+                // Even if hidden, we might want to calculate it for internal consistency or if other parts depend on it.
+                // However, for the summary, it must be 0.
+                // Let's assume calcularPrestaciones doesn't have side effects beyond its own table if hidden.
+                // Forcing $0 in summary is key.
+                calcularPrestaciones(totalDevengado); // Calculate to update its own table (though hidden)
+                prestacionesParaResumen = 0; // Value for RESUMEN DE PAGO and NETO A PAGAR
+            }
+
             const deduccionesCalculadas = calcularDeducciones(totalDevengado);
+            calcularResumen(totalDevengado, prestacionesParaResumen, deduccionesCalculadas);
 
-            // Calcular y mostrar resumen
-            calcularResumen(totalDevengado, prestacionesCalculadas, deduccionesCalculadas);
-
-            // Mostrar todas las secciones de resultados
+            // Show result containers (beneficios-container display is now handled above)
             document.getElementById('resultados-container').style.display = 'block';
-            document.getElementById('beneficios-container').style.display = 'block';
+            // beneficios-container display is set based on prestacionesActivas
             document.getElementById('deducciones-container').style.display = 'block';
             document.getElementById('resumen-container').style.display = 'block';
         }
@@ -925,6 +937,49 @@
             alert('Progreso cargado exitosamente. Por favor, haga clic en "Calcular Todas" para ver los resultados.');
         }
 
+        function togglePrestaciones() {
+            prestacionesActivas = !prestacionesActivas; // Invert the state
+
+            const btnToggle = document.getElementById('btnTogglePrestaciones');
+            if (btnToggle) {
+                btnToggle.textContent = prestacionesActivas ? 'Prestaciones: ON' : 'Prestaciones: OFF';
+            }
+
+            // Recalculate everything to reflect the change
+            // Need to ensure salarioBase has a value if no jornadas are present,
+            // or that calcularTodasJornadas handles it.
+            // For now, assume it's okay to call, or user has already input salary.
+            if (document.getElementById('salarioBase').value) { // Only recalculate if salary base is entered
+                 calcularTodasJornadas();
+            } else {
+                // If no salary is entered, just update button and visibility of the section
+                // (visibility part will be handled in mostrarResultados based on prestacionesActivas)
+                // but we might need to manually refresh parts of the display if calcularTodasJornadas is skipped.
+                // For simplicity now, we'll rely on calcularTodasJornadas.
+                // A more refined approach might be to just call mostrarResultados if totalDevengado is already computed
+                // and only the summary needs re-evaluation.
+                // However, if no calculation has run, there's nothing to update in the summary anyway.
+                // Let's ensure the card visibility is handled even if calculation doesn't run.
+                const beneficiosContainer = document.getElementById('beneficios-container');
+                if (beneficiosContainer) {
+                    beneficiosContainer.style.display = prestacionesActivas ? 'block' : 'none';
+                }
+                // If we hide it here, also need to ensure resumen-prestaciones is $0 if no recalc
+                // This is getting complex, better to ensure calcularTodasJornadas or mostrarResultados runs.
+                // Let's stick to the plan: call calcularTodasJornadas, which calls mostrarResultados.
+                // The user should have salary and jornadas if they want meaningful output.
+                // If they toggle before calculating, the effect will be seen on the *next* calculation.
+                // This is acceptable.
+                // The most direct impact of the toggle without a full recalc would be on an *existing* calculation.
+                // So, if a calculation is already displayed, we want to refresh it.
+
+                // Let's refine: if results are visible, then recalculate. Otherwise, the change applies at next calculation.
+                if (document.getElementById('resultados-container').style.display === 'block') {
+                     calcularTodasJornadas();
+                }
+            }
+        }
+
         // Función para resetear todo
         function resetTodo() {
             document.getElementById('jornadas-container').innerHTML = '';
@@ -933,6 +988,13 @@
             document.getElementById('valorRodamientoDiario').value = '';
             contadorJornadas = 0;
             salarioBase = 0;
+
+            // Reset Prestaciones Sociales toggle state and button
+            prestacionesActivas = true; // Reset to default state (ON)
+            const btnTogglePrestacionesElem = document.getElementById('btnTogglePrestaciones');
+            if (btnTogglePrestacionesElem) {
+                btnTogglePrestacionesElem.textContent = 'Prestaciones: ON';
+            }
 
             // Resetear acumuladores
             totalHorasOrdinarias = 0;
@@ -1022,6 +1084,11 @@
                     };
                     reader.readAsText(file);
                 });
+            }
+
+            const btnTogglePrestacionesElem = document.getElementById('btnTogglePrestaciones');
+            if (btnTogglePrestacionesElem) {
+                btnTogglePrestacionesElem.addEventListener('click', togglePrestaciones);
             }
         };
     </script>
